@@ -15,7 +15,8 @@ class Superglobals
         $this->_post = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
         $this->_get = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
         $this->_files = filter_var_array($_FILES, FILTER_SANITIZE_STRING);
-        $this->_session = filter_var_array($_SESSION, FILTER_SANITIZE_STRING);
+        if (isset($_SESSION))
+            $this->_session = filter_var_array($_SESSION, FILTER_SANITIZE_STRING);
         $this->_server = filter_var_array($_SERVER, FILTER_SANITIZE_STRING);
     }
 
@@ -36,7 +37,9 @@ class Superglobals
 
     public function session($key = null, $default = null)
     {
-        return $this->checkGlobal($this->_session, $key, $default);
+        if (isset($this->_session))
+            return $this->checkGlobal($this->_session, $key, $default);
+        return false;
     }
 
     public function server($key = null, $default = null)
