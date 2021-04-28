@@ -5,7 +5,7 @@
     use \controllers\CPanelController as CPanelController;
     use \engine\Superglobals as Superglobals;
     
-class CPanel
+class CPanel extends Model
 {
     protected $db;
     public function __construct()

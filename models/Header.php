@@ -4,7 +4,7 @@
     use \engine\DbOperations as DbOperations;
     use \controllers\HeaderController as HeaderController;
     
-class Header
+class Header extends Model
 {
     protected $db;
     public function __construct()

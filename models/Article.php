@@ -4,7 +4,7 @@
     use \engine\DbOperations as DbOperations;
     use \controllers\ArticleController as ArticleController;
     
-class Article
+class Article extends Model
 {
     protected $db;
     public function __construct()

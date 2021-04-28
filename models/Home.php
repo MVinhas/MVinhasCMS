@@ -4,7 +4,7 @@
     use \engine\DbOperations as DbOperations;
     use \controllers\HomeController as HomeController;
     
-class Home
+class Home extends Model
 {
     protected $db;
     public function __construct()

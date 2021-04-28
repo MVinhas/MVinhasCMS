@@ -4,7 +4,7 @@
     use \engine\DbOperations as DbOperations;
     use \controllers\SiteController as SiteController;
     
-class Site
+class Site extends Model
 {
     protected $db;
     public function __construct()
