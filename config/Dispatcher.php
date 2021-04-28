@@ -1,5 +1,7 @@
 <?php
 namespace config;
+use Engine\Superglobals;
+use Engine\SiteInfo;
 
 class Dispatcher
 {
@@ -17,16 +19,18 @@ class Dispatcher
         $split = explode("\\", $uri->controller);
         $controller = explode("Controller", $split[2]);
 
-        $site = new \engine\SiteInfo();
+        $site = new SiteInfo();
 
         $_SESSION['page_title'] = $site->getName().' :: '.$controller[0];
     }
     private static function getURI()
     {
-        if (!isset($_SERVER['REQUEST_URI']))
+        $globals = new Superglobals();
+        
+        if (!$globals->server('REQUEST_URI'))
             return false;
 
-        $url = explode('/', trim(filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL), '/'));
+        $url = explode('/', trim($globals->server('REQUEST_URI'), '/'));
 
         $ctrPos = isset($url[1]) ? $url[1] : null;
         $mtdPos = isset($url[2]) ? $url[2] : null;

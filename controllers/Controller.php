@@ -5,6 +5,7 @@ class Controller
 {
     protected $config_flags;
     protected $twig;
+    protected $globals;
 
     public function __construct()
     {
@@ -12,6 +13,7 @@ class Controller
         global $twig;
         $this->config_flags = $config_flags;
         $this->twig = $twig;
+        $this->globals = new Superglobals();
     }
 
     public function getDirectory($filename)

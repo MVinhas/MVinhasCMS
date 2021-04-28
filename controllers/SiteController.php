@@ -8,6 +8,7 @@ use \models\Header as Header;
 use \models\Footer as Footer;
 use \models\Site as Site;
 use \models\Home as Home;
+use \controllers\CPanelController as CPanelController;
 
 class SiteController extends Controller
 {
@@ -22,7 +23,7 @@ class SiteController extends Controller
     }
     public function index()
     {
-        $get = filter_input_array(INPUT_GET);
+        $get = $this->globals->get();
         try {
             $this->model->visitCounter();
         } catch (\Error $e) {
@@ -43,7 +44,7 @@ class SiteController extends Controller
             header('Location: ?');
         
         if (isset($key_func) && $key_func === 'CPanel') {
-            $cpanelController = new \controllers\CPanelController;
+            $cpanelController = new CPanelController;
             $cpanelController->header();
         } else {
             $this->header();    
@@ -56,7 +57,7 @@ class SiteController extends Controller
     {
         $out = array();
         $out['debug_mode'] = $this->config_flags->debugmode;
-        $out['page_title'] = filter_var($_SESSION['page_title'], FILTER_SANITIZE_STRING);
+        $out['page_title'] = $this->globals->session('page_title'); 
         $headTemplate = $this->getFile($this->path, __FUNCTION__);
         $this->view($headTemplate, $out);
     }

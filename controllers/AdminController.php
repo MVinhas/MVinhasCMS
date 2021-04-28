@@ -3,6 +3,7 @@
 namespace controllers;
 
 use \models\Admin as Admin;
+use \engine\Superglobas as Superglobals;
 
 class AdminController extends Controller
 {
@@ -17,7 +18,7 @@ class AdminController extends Controller
 
     public function index()
     {
-        if (null === filter_var($_SESSION['user'], FILTER_SANITIZE_STRING))
+        if (!$this->globals->session('user'))
             $this->login();
     }
     
@@ -33,8 +34,8 @@ class AdminController extends Controller
     {
         $admin = new Admin();
         $user = $admin->getUser(
-            trim(filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING)), 
-            trim(filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING))
+            $this->globals->post('username'),
+            $this->globals->post('password')
         );
         if (is_array($user)) {
             $home = new HomeController;

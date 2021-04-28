@@ -3,6 +3,7 @@
 
     use \engine\DbOperations as DbOperations;
     use \controllers\CPanelController as CPanelController;
+    use \engine\Superglobals as Superglobals;
     
 class CPanel
 {
@@ -21,7 +22,8 @@ class CPanel
 
     public function createArticle(array $article)
     {
-        $files = filter_var_array($_FILES, FILTER_SANITIZE_STRING);
+        $globals = new Superglobals();
+        $files = $globals->files(); 
         $article['date'] = date('Y-m-d');
         $article['comments'] = 0;
         $article['likes'] = 0;
@@ -41,7 +43,8 @@ class CPanel
     
     public function editArticle(int $id, array $article)
     {
-        $files = filter_var_array($_FILES, FILTER_SANITIZE_STRING);
+        $globals = new Superglobals();
+        $files = $globals->files(); 
         $data = array($id);
         if (isset($files['avatar'])) {
             $directory = 'images/article';

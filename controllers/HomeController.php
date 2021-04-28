@@ -22,7 +22,7 @@ class HomeController extends Controller
 
     public function index()
     {
-        if (null !== ($page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT))) {
+        if ($this->globals->get('page')) {
             $offset = 0;
             $offset += ($page * 5);
             $out['page'] = $page;
@@ -39,25 +39,25 @@ class HomeController extends Controller
     public function register()
     {
         $fields = 'email, username, password, role, active';
-        $password = password_hash(filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING), PASSWORD_DEFAULT);
+        $password = password_hash($this->globals->post('password'), PASSWORD_DEFAULT);
         $admin_exists = $this->model->checkAdmin();
         $admin_exists === 1 ? $role = 'user' : $role = 'admin'; 
 
         $values = array(
-            filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL), 
-            filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING), 
+            $this->globals->post('email'), 
+            $this->globals->post('username'), 
             $password, 
             $role, 
             1
         );
         $createUser = $this->model->createUser($fields, $values);
-        $createUser === 1 ? $this->login(filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL), $role) : $this->setup($createUser);
+        $createUser === 1 ? $this->login($this->globals->post('email'), $role) : $this->setup($createUser);
     }
 
     public function login($email, $role)
     {
-        $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
-        if (empty(filter_var($_SESSION['users']['email'], FILTER_SANITIZE_STRING)) && $username)
+        $username = $this->globals->post('username');
+        if (empty($this->globals->post('email')) && $username)
             $_SESSION['users'] = array(
                 'email' => $email,
                 'username' => $username,
@@ -72,14 +72,14 @@ class HomeController extends Controller
 
     public function search()
     {
-        if (empty($inputsearch = filter_input(INPUT_POST, 'search', FILTER_SANITIZE_STRING))) 
+        if (!$this->globals->post('search')) 
             return $this->index();
         $out = array();
         $out['categories'] = $this->site->getCategories();
         $out['about'] = $this->model->getAbout();
         $out['archives'] = $this->model->getArchives();
         $out['social'] = $this->model->getSocial();
-        $search_terms = explode(" ", $inputsearch);
+        $search_terms = explode(" ", $this->globals->post('search'));
         $out['articles'] = $this->model->getArticlesBySearch($search_terms);
         if (!isset($out['articles'][0]) && !empty($out['articles'])) {
             $temp = $out['articles'];

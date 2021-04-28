@@ -23,9 +23,8 @@ class ArticleController extends Controller
 
     public function archive()
     {
-        $get = filter_input_array(INPUT_GET, FILTER_VALIDATE_INT);
         $out = array();
-        $out['articles'] = $this->model->getCurrentPosts($get['month'], $get['year']);
+        $out['articles'] = $this->model->getCurrentPosts($this->globals->get('month'), $this->globals->get('year'));
         if (!isset($out['articles'][0])) {
             $temp = $out['articles'];
             unset($out['articles']);
@@ -42,7 +41,7 @@ class ArticleController extends Controller
 
     public function detail()
     {
-        $out['article'] = $this->site->getArticle(filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT));
+        $out['article'] = $this->site->getArticle((int)$this->globals->get('id')); 
         $home = new Home();
         $out['categories'] = $this->site->getCategories();
         $out['about'] = $home->getAbout();
@@ -55,7 +54,7 @@ class ArticleController extends Controller
 
     public function category()
     {
-        $out['articles'] = $this->model->getArticlesByCategory(filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT));
+        $out['articles'] = $this->model->getArticlesByCategory((int)$this->globals->get('id')); 
         if (!isset($out['articles'][0]) && !empty($out['articles'])) {
             $temp = $out['articles'];
             unset($out['articles']);
