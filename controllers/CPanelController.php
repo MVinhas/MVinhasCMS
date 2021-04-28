@@ -92,8 +92,8 @@ class CPanelController extends Controller
         $out = array();
         $getid = (int)$this->globals->get('id'); 
         if (!empty($getid)) {
-            $out['post']['id'] = $getid;
-            $out['post'] = $this->site->getArticle($getid);
+            $out['article']['id'] = $getid;
+            $out['article'] = $this->site->getArticle($getid);
         }
         $out['categories'] = $this->site->getCategories();
         $out['author'] = $this->globals->session(['users', 'username']); 
@@ -115,11 +115,12 @@ class CPanelController extends Controller
 
     public function articleEditorSubmit()
     {
-        !empty($this->globals->get('id')) ? $this->model->editPost($getid, $post) : $this->model->createPost($this->globals->post());
+        $post = $this->globals->post();
+        !empty($this->globals->get('id')) ? $this->model->editArticle($getid, $post) : $this->model->createArticle($this->globals->post());
         
-        $cpanel = $this->getFile($this->path, 'postsIndex');
+        $cpanel = $this->getFile($this->path, 'articlesIndex');
         $out = array();
-        $out['articles'] = $this->model->getPosts();
+        $out['articles'] = $this->model->getArticles();
         $this->view($cpanel, $out);
     }
 
