@@ -50,10 +50,6 @@ class Superglobals
     private function checkGlobal($global, $key = null, $default = null)
     {
         if ($key) {
-            if (is_array($key)) {
-                if (isset($global[$key[0]][$key[1]]))  
-                return $global[$key[0]][$key[1]];      
-            }
             if (isset($global[$key]))
                 return $global[$key];
             else

@@ -96,7 +96,7 @@ class CPanelController extends Controller
             $out['article'] = $this->site->getArticle($getid);
         }
         $out['categories'] = $this->site->getCategories();
-        $out['author'] = $this->globals->session(['users', 'username']); 
+        $out['author'] = $this->globals->session('users')['username']; 
         $out['debugmode'] = $this->config_flags->debugmode;
         $this->view($articleCreate, $out); 
     }
