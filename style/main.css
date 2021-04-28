@@ -1,15 +1,15 @@
 
 body {
-  font-family: 
-    -apple-system, 
+  font-family:
+    -apple-system,
     BlinkMacSystemFont,
-    'Segoe UI', 
-    'Roboto', 
-    'Oxygen', 
-    'Ubuntu', 
+    'Segoe UI',
+    'Roboto',
+    'Oxygen',
+    'Ubuntu',
     'Cantarell',
-    'Fira Sans', 
-    'Droid Sans', 
+    'Fira Sans',
+    'Droid Sans',
     'Helvetica Neue',
     sans-serif;
   text-rendering: optimizeLegibility;
@@ -31,7 +31,7 @@ pre {
   top: 100%;
   background: gainsboro;
   width: 100%;
-  left:0;
+  left: 0;
   position: sticky;
 }
 
@@ -88,6 +88,7 @@ form label.error {
 .display-4 {
   font-size: 2.5rem;
 }
+
 @media (min-width: 768px) {
   .display-4 {
     font-size: 3rem;
@@ -152,7 +153,7 @@ form label.error {
 }
 
 .blog-article-title {
-  margin-bottom: .25rem;
+  margin-bottom: 0.25rem;
   font-size: 2.5rem;
 }
 
