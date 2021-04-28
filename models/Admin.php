@@ -4,7 +4,7 @@
     use \engine\DbOperations as DbOperations;
     use \controllers\AdminController as AdminController;
     
-class Admin
+class Admin extends Model
 {
     protected $db;
     public function __construct()
