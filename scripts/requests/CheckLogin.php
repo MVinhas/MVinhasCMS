@@ -2,15 +2,18 @@
     chdir('../..');
     require_once 'config/conf.php';
 
-    use \engine\DbOperations as DbOperations;
+    use \Engine\DbOperations as DbOperations;
+    use \Engine\Superglobals as Superglobals;
 
 class CheckLogin
 {
         
     protected $db;
+    public $globals;
     public function __construct()
     {
         $this->db = new DbOperations;
+        $this->globals = new Superglobals();
     }
 
 
@@ -31,10 +34,10 @@ class CheckLogin
 }
 
 $check = new CheckLogin;
-if (null !== ($username = filter_input(FILTER_POST, 'username', FILTER_SANITIZE_STRING))) {
-    $username_exists = $check->username($username);
+if ($check->globals->post('username')) { 
+    $username_exists = $check->username($check->globals->post('username'));
     if (!empty($username_exists)) {
-        if (in_array($username, $username_exists)) {
+        if (in_array($check->globals->post('username'), $username_exists)) {
             $exists = 1;
             ob_clean();
             print_r('true');
@@ -46,8 +49,8 @@ if (null !== ($username = filter_input(FILTER_POST, 'username', FILTER_SANITIZE_
     }
 }
 
-if (null !== ($userpass = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING))) {
-    $password = explode('||', $userpass);
+if ($check->globals->post('password')) {
+    $userpass = explode('||', $check->globals->post('password'));
     $username_exists = $check->password($userpass[0]);
     if (!empty($username_exists)) {
         $password = password_verify($userpass[1], $username_exists['password']);

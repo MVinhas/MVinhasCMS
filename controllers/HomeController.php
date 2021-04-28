@@ -22,13 +22,13 @@ class HomeController extends Controller
 
     public function index()
     {
+        $offset = 0;
         if ($this->globals->get('page')) {
-            $offset = 0;
             $offset += ($page * 5);
             $out['page'] = $page;
         }
-
-        $out['articles'] = $this->model->getPosts($offset);
+        
+        $out['articles'] = $this->model->getArticles($offset);
         $out['about'] = $this->model->getAbout();
         $out['archives'] = $this->model->getArchives();
         $out['social'] = $this->model->getSocial();

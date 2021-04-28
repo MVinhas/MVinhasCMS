@@ -17,7 +17,7 @@ class Admin
     {
         $data = array($username);
         $user = $this->db->select('users', 'username, email, password, role', 'username = ?', $data);
-        
+        echo print_r($user);
         $password_verify = password_verify($password, $user['password']);
         
         if ($password_verify) {

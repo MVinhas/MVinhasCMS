@@ -17,14 +17,14 @@ class ArticleController extends Controller
         parent::__construct();
         $file = pathinfo(__FILE__, PATHINFO_FILENAME);
         $this->path = $this->getDirectory($file);
-        $this->model = new Post();
+        $this->model = new Article();
         $this->site = new Site();
     }
 
     public function archive()
     {
         $out = array();
-        $out['articles'] = $this->model->getCurrentPosts($this->globals->get('month'), $this->globals->get('year'));
+        $out['articles'] = $this->model->getCurrentArticles($this->globals->get('month'), $this->globals->get('year'));
         if (!isset($out['articles'][0])) {
             $temp = $out['articles'];
             unset($out['articles']);

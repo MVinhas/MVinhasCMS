@@ -27,14 +27,14 @@ class Dispatcher
     {
         $globals = new Superglobals();
         
-        if ($globals->server('REQUEST_URI'))
+        if (!$globals->server('REQUEST_URI'))
             return false;
 
         $url = explode('/', trim($globals->server('REQUEST_URI'), '/'));
 
-        $ctrPos = isset($url[1]) ? $url[1] : null;
-        $mtdPos = isset($url[2]) ? $url[2] : null;
-        $argPos = isset($url[3]) ? $url[3] : null;
+        $ctrPos = isset($url[0]) ? $url[0] : null;
+        $mtdPos = isset($url[1]) ? $url[1] : null;
+        $argPos = isset($url[2]) ? $url[2] : null;
 
         isset($ctrPos) ? $ctrPos = preg_replace('/\?/', '', $ctrPos) : null;
         //check for controller
