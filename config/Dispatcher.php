@@ -27,7 +27,7 @@ class Dispatcher
     {
         $globals = new Superglobals();
         
-        if (!$globals->server('REQUEST_URI'))
+        if ($globals->server('REQUEST_URI'))
             return false;
 
         $url = explode('/', trim($globals->server('REQUEST_URI'), '/'));

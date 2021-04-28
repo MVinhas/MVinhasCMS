@@ -1,4 +1,5 @@
 <?php
+/*
 namespace Database;
 
 use \Database\Select;
@@ -27,3 +28,4 @@ echo Insert::table('users')->set([
 ])->raw();
 echo "<br>";
 echo Delete::table('users')->where(['name' => 'Joana'])->raw();
+*/

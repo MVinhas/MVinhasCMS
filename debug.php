@@ -1,5 +1,7 @@
 
 <?php
+use \Engine\Superglobals as Superglobals;
+$globals = new Superglobals;
     if (isset($db_error))
         if (!empty($db_error)) print_r($db_error);
 ?>
@@ -9,17 +11,15 @@
     "<br><b>PHP and MYSQL:</b>".
     '<div id="php-sql-errors"></div>'.
     "<br><b>SESSION:</b>".
-    filter_var_array($_SESSION, FILTER_SANITIZE_STRING).
+    $globals->session().
     "<br><b>POST:</b>".
-    filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING).
+    $globals->post().
     "<br><b>GET:</b>".
-    filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING).
-    "<br><b>COOKIE:</b>".
-    filter_var_array($_COOKIE, FILTER_SANITIZE_STRING).
+    $globals->get().
     "<br><b>SERVER:</b>".
-    filter_var_array($_SERVER, FILTER_SANITIZE_STRING).
+    $globals->server().
     "<br><b>FILES:</b>".
-    filter_var_array($_FILES, FILTER_SANITIZE_STRING).
+    $globals->files().
     "</pre>";
 ?>
 <script>
