@@ -10,7 +10,8 @@
         "psr-4": {
             "Database\\": "database/",
             "Database\\Interfaces\\" : "database/interfaces/",
-            "Database\\Traits\\" : "database/traits/"
+            "Database\\Traits\\" : "database/traits/",
+            "Engine\\" : "engine/"
         }
     },
     "license": "AGPL-3.0-or-later",

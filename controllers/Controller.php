@@ -1,5 +1,6 @@
 <?php
 namespace controllers;
+use \Engine\Superglobals as Superglobals;
 
 class Controller
 {
