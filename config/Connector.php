@@ -34,7 +34,7 @@ class Connector
     public function __call($name, $args)
     {
         if (method_exists($this->connection, $name)) {
-            return call_user_func_array(array($this->connection,$name), $args);
+            return $this->connection->$name(...$args);
         } else {
             return false;
         }
