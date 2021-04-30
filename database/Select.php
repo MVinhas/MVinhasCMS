@@ -16,32 +16,35 @@ class Select extends SanitizeQuery implements QueryInterface
         $this->table = $table;    
     }
 
-    public static function table(string $table)
-    {
-        return new Select($table);
-    }
-
     public function fields(...$fields)
     {
+        if (empty($fields))
+            return $this;
+        
+        if ($fields[0] === '*') {
+            $this->fields = '*';
+            return $this;
+        }
+        
         foreach ($fields as &$field) {
             $field = "`".$field."`";
         }
 
-        $this->fields = $fields;
+        $this->fields = implode(', ', $fields);
+
         return $this;
     }
 
     public function queryBuilder()
     {
         $query = array();
-
-        $fields = implode(', ', $this->fields) ?? '*';
+        
+        $fields = $this->fields ?? '*';
 
         $query[] = "SELECT $fields FROM `$this->table`";
-        
-        if (!empty($this->where)) {
+
+        if (!empty($this->where))
             $query[] = "WHERE ".implode(" AND ", $this->where);
-        }
 
         return implode(' ', $query);
     }

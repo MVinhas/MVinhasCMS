@@ -16,11 +16,6 @@ class Update
         $this->table = $table;    
     }
 
-    public static function table(string $table)
-    {
-        return new Update($table);
-    }
-
     public function set($args)
     {
         foreach ($args as $k => $v) {
