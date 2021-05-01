@@ -1,29 +1,29 @@
 <?php
 namespace Database;
 
-use \Database\Interfaces\QueryInterface;
+use Database\Interfaces\QueryInterface;
+use Database\SanitizeQuery;
 
-class Create implements QueryInterface
+class Create extends SanitizeQuery implements QueryInterface 
 {
-    protected $fields = array();
+    use Traits\PrepareTrait;
+    public $table;
 
-    protected $table;
+    public $set;
 
     public function __construct($table)
     {
         $this->table = $table;    
     }
 
-    public static function table(string $table)
-    {
-        return new Create($table);
-    }
-
     public function set($args)
     {
         foreach ($args as $k => $v) {
-            $this->fields[] = "`$k` $v";
+            if (empty($k) || empty($v)) continue;
+            $set[] = "`$k` $v";
         }
+        $this->set = implode(', ', $set);
+
         return $this;
     }
 
@@ -31,9 +31,7 @@ class Create implements QueryInterface
     {
         $query = array();
 
-        $fields = implode(', ', $this->fields);
-
-        $query = "CREATE TABLE `$this->table` ($fields)";
+        $query = "CREATE TABLE `$this->table` ($this->set)";
         
         return $query;
     }
@@ -41,6 +39,20 @@ class Create implements QueryInterface
     public function raw()
     {
         return $this->queryBuilder();
-    }     
+    }
+
+    public function done()
+    {
+        $sql = $this->db->real_escape_string($this->queryBuilder());
+        $this->db->query($sql);
+        //A ver depois como vamos tratar os erros
+        /*
+        if ($this->db->connection->errno)
+            return false;
+        else
+            return true;
+        */
+    }
+    
 
 }

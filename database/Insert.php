@@ -3,11 +3,13 @@ namespace Database;
 
 use \Database\Interfaces\QueryInterface;
 
-class Insert implements QueryInterface
+class Insert extends SanitizeQuery implements QueryInterface
 {
-    protected $fields = array();
+    use Traits\PrepareTrait;
 
-    protected $values = array();
+    protected $fields;
+
+    protected $values;
 
     protected $table;
 
@@ -25,9 +27,13 @@ class Insert implements QueryInterface
     {
         foreach ($args as $k => $v) {
             if (empty($k) || empty($v)) continue;
-            $this->fields[] = "`".$k."`";
-            $this->values[] = "'{$v}'";
+            $fields[] = "`".$k."`";
+            $values[] = "'{$v}'";
         }
+
+        $this->fields = implode(', ', $fields);
+        $this->values = implode(', ', $values);
+
         return $this;
     }
 
@@ -35,10 +41,7 @@ class Insert implements QueryInterface
     {
         $query = array();
 
-        $fields = implode(', ', $this->fields);
-        $values = implode(', ', $this->values);
-
-        $query = "INSERT INTO `$this->table` ($fields) VALUES ($values)";
+        $query = "INSERT INTO `$this->table` ($this->fields) VALUES ($this->values)";
         
         return $query;
     }
@@ -46,6 +49,27 @@ class Insert implements QueryInterface
     public function raw()
     {
         return $this->queryBuilder();
-    }     
+    }
+    
+    public function done()
+    {
+        $values = explode(', ', $this->values);
+
+        foreach ($values as $value) {
+            $prepared[] = str_replace($value, '?', $values);
+        }
+
+        $preparedQuery = str_replace($this->values, implode(', ', $prepared), $this->queryBuilder());
+
+        $this->entityEncode($values);
+
+        $statement = $this->preparedStatement($preparedQuery, count($prepared), $values);
+
+        if ($statement->execute()) {
+            return $statement->execute();
+        }
+        return "KO";
+
+    }
 
 }

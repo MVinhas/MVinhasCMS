@@ -6,6 +6,7 @@ use \Database\Delete;
 use \Database\Insert;
 use \Database\Select;
 use \Database\Update;
+use \Database\TableIndex;
 
 class Query
 {
@@ -13,7 +14,7 @@ class Query
 
     public function __construct()
     {
-
+        $this->db = \config\Connector::init();
     }
 
     public static function create($table)
@@ -39,5 +40,10 @@ class Query
     public static function update($table)
     {
         return new Update($table);
+    }
+
+    public static function tableIndex($table)
+    {
+        return new TableIndex($table);
     }
 }
