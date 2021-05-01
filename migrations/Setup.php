@@ -3,10 +3,10 @@ namespace migrations;
 
 class Setup
 {
-    protected $db;
+    protected $query;
     public function __construct()
     {
-        $this->db = new \engine\DbOperations;
+        $this->query = new \Database\Query;
     }
 
     public function index()
@@ -45,7 +45,7 @@ class Setup
             'siteauthor' => 'VARCHAR(100) NOT NULL',
             'launchyear' => 'INT(4) NOT NULL DEFAULT '.date('Y')
         );
-        $this->db->createTable(__FUNCTION__, $fields);
+        $this->query->create(__FUNCTION__)->set($fields)->done();
     }
 
     private function users()
@@ -59,7 +59,7 @@ class Setup
             'reg_date' => 'TIMESTAMP',
             'active' => 'INT(11) NOT NULL DEFAULT 0'
         );
-        $this->db->createTable(__FUNCTION__, $fields);
+        $this->query->create(__FUNCTION__)->set($fields)->done();
     }
 
     private function articles()
@@ -79,9 +79,9 @@ class Setup
             'status' => 'INT(1) NOT NULL',
             'featured' => 'INT(1) NOT NULL DEFAULT 0'
         );
-        $this->db->createTable(__FUNCTION__, $fields);
-        $this->db->createIndex(__FUNCTION__, 'status', '(status)');
-        $this->db->createIndex(__FUNCTION__, 'category_status', '(category, status)');
+        $this->query->create(__FUNCTION__)->set($fields)->done();
+        $this->query->tableIndex(__FUNCTION__)->constraint('status')->value('status')->done();
+        $this->query->tableIndex(__FUNCTION__)->constraint('category_status')->value('category, status')->done();
     }
 
     private function comments()
@@ -94,7 +94,7 @@ class Setup
             'likes' => 'INT(11) NOT NULL',
             'status' => 'INT(1) NOT NULL'
         );
-        $this->db->createTable(__FUNCTION__, $fields);
+        $this->query->create(__FUNCTION__)->set($fields)->done();
     }
 
     private function categories()
@@ -103,7 +103,7 @@ class Setup
             'id' => 'INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY',
             'name' => 'VARCHAR(64) NOT NULL UNIQUE KEY'
         );
-        $this->db->createTable(__FUNCTION__, $fields);
+        $this->query->create(__FUNCTION__)->set($fields)->done();
     }
 
     private function pages()
@@ -119,10 +119,10 @@ class Setup
             'menu' => 'INT(1) NOT NULL DEFAULT 0',
             'footer' => 'INT(1) NOT NULL DEFAULT 0'
         );
-        $this->db->createTable(__FUNCTION__, $fields);
+        $this->query->create(__FUNCTION__)->set($fields)->done();
 
-        $this->db->createIndex(__FUNCTION__, 'id_name', 'UNIQUE KEY(id, name)');
-        $this->db->createIndex(__FUNCTION__, 'header', '(header)');
+        $this->query->tableIndex(__FUNCTION__)->constraint('id_name')->type("UNIQUE_KEY")->value('id, name')->done();
+        $this->query->tableIndex(__FUNCTION__)->constraint('header')->value('header')->done();
     }
 
     private function controllers()
@@ -131,7 +131,7 @@ class Setup
             'id' => 'INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY',
             'name' => 'VARCHAR(64) NOT NULL UNIQUE KEY'
         );
-        $this->db->createTable(__FUNCTION__, $fields);
+        $this->query->create(__FUNCTION__)->set($fields)->done();
     }
 
     private function methods()
@@ -141,7 +141,7 @@ class Setup
             'name' => 'VARCHAR(64) NOT NULL UNIQUE KEY',
             'controller' => 'INT(3) NOT NULL DEFAULT 0'
         );
-        $this->db->createTable(__FUNCTION__, $fields);
+        $this->query->create(__FUNCTION__)->set($fields)->done();
     }
 
     private function tags()
@@ -150,7 +150,7 @@ class Setup
             'id' => 'INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY',
             'name' => 'VARCHAR(64) NOT NULL UNIQUE KEY'
         );
-        $this->db->createTable(__FUNCTION__, $fields);   
+        $this->query->create(__FUNCTION__)->set($fields)->done();  
     }
 
     private function about()
@@ -159,7 +159,7 @@ class Setup
             'id' => 'INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY',
             'name' => 'TEXT NULL' 
         );
-        $this->db->createTable(__FUNCTION__, $fields); 
+        $this->query->create(__FUNCTION__)->set($fields)->done();
     }
 
     private function social()
@@ -170,8 +170,8 @@ class Setup
             'link' => 'VARCHAR(256) NOT NULL',
             'visible' => 'INT(1) NOT NULL DEFAULT 1'
         );
-        $this->db->createTable(__FUNCTION__, $fields);
-        $this->db->createIndex(__FUNCTION__, 'visible', '(visible)');
+        $this->query->create(__FUNCTION__)->set($fields)->done();
+        $this->query->tableIndex(__FUNCTION__)->constraint('visible')->value('visible')->done();
     }
 
     private function sessions()
@@ -181,117 +181,230 @@ class Setup
             'session' => 'VARCHAR(32) NOT NULL',
             'firstvisit' => 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP'
         );
-        $this->db->createTable(__FUNCTION__, $fields);
+        $this->query->create(__FUNCTION__)->set($fields)->done();
 
-        $this->db->createIndex(__FUNCTION__, 'session', '(session)');
+        $this->query->tableIndex(__FUNCTION__)->constraint('session')->value('session')->done();
     }
 
     private function insertConfig()
     {
         $table = 'config';
-        $fields = 'sitename, email, siteversion, siteauthor';
-        $values = array('My CMS Blog', 'jackblogle@example.com', '1.0.0', 'Jack Bogle');
 
-        $this->db->create($table, $fields, $values);
+        $this->query->insert($table)->set([
+            'sitename' => 'My CMS Blog',
+            'email' => 'jackbogle@example.com',
+            'siteversion' => '1.0.0',
+            'siteauthor' => 'Jack Bogle'
+        ])->done();
     }
 
     private function insertControllers()
     {
         $table = 'controllers';
-        $fields = 'name';
-        $values_1 = array('Home');
-        $values_2 = array('Admin');
-        
-        $this->db->create($table, $fields, $values_1);
-        $this->db->create($table, $fields, $values_2);
+
+        $this->query->insert($table)->set([
+            'name' => 'Home'
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'name' => 'Admin'
+        ])->done();
     }
 
     private function insertMethods()
     {
         $table = 'methods';
-        $fields = 'name, controller';
-        $values_1 = array('setup', 1);
-        $values_2 = array('login', 2);
 
-        $this->db->create($table, $fields, $values_1);
-        $this->db->create($table, $fields, $values_2);
+        $this->query->insert($table)->set([
+            'name' => 'setup',
+            'controller' => 1
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'name' => 'login',
+            'controller' => 2
+        ])->done();
     }
 
     private function insertPages()
     {
         $table = 'pages';
-        $fields = '`name`, `method`, `active`, `header`, `menu`, `footer`';
-        $values_1 = array('Register', 1, 1, 1, 1, 0);
-        $values_2 = array('Login', 2, 1, 1, 1, 0);
 
-        $this->db->create($table, $fields, $values_1);
-        $this->db->create($table, $fields, $values_2);
+        $this->query->insert($table)->set([
+            'name' => 'Register',
+            'method' => 1,
+            'active' => 1,
+            'header' => 1,
+            'menu' => 1,
+            'footer' => 0
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'name' => 'Login',
+            'method' => 2,
+            'active' => 1,
+            'header' => 1,
+            'menu' => 1,
+            'footer' => 0
+        ])->done();
     }
 
     private function insertCategories()
     {
         $table = 'categories';
-        $fields = 'name';
-        $values_1 = array('Programming');
-        $values_2 = array('Hardware');
-        $values_3 = array('Mobility');
-        $values_4 = array('Software');
-        $values_5 = array('Linux');
-        $values_6 = array('macOS');
-        $values_7 = array('Windows');
-        $values_8 = array('Gaming');
-        $values_9 = array('Music');
-        $values_10 = array('Lifestyle');
-        $values_11 = array('PC Buyers Guide');
 
-        $this->db->create($table, $fields, $values_1);
-        $this->db->create($table, $fields, $values_2);
-        $this->db->create($table, $fields, $values_3);
-        $this->db->create($table, $fields, $values_4);
-        $this->db->create($table, $fields, $values_5);
-        $this->db->create($table, $fields, $values_6);
-        $this->db->create($table, $fields, $values_7);
-        $this->db->create($table, $fields, $values_8);
-        $this->db->create($table, $fields, $values_9);
-        $this->db->create($table, $fields, $values_10);
-        $this->db->create($table, $fields, $values_11);
+        $this->query->insert($table)->set([
+            'name' => 'Programming'
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'name' => 'Hardware'
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'name' => 'Mobility'
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'name' => 'Software'
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'name' => 'Linux'
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'name' => 'macOS'
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'name' => 'Windows'
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'name' => 'Gaming'
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'name' => 'Music'
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'name' => 'Lifestyle'
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'name' => 'PC Buyers Guide'
+        ])->done();
     }
 
     private function insertArticles()
     {
         $table = 'articles';
-        $fields = '`category`, `title`, `author`, `date`, `short_content`, `content`, `comments`, `likes`, `status`, `featured`';
-        $values_1 = array(1, 'Fusce sit amet consectetur risus.', 'Micael Vinhas', '2020-04-07', 'Integer consequat interdum egestas.', 'Integer consequat interdum egestas. Sed mollis ornare erat non varius. Mauris congue, nunc quis porta condimentum, ligula tellus commodo velit, at cursus diam arcu in odio. Cras nisl quam, aliquam sit amet aliquam a, fermentum sit amet arcu. Integer molestie at tortor vel malesuada.', 0, 0, 1, 2);
-        $values_2 = array(2, 'Vestibulum molestie efficitur facilisis.', 'Micael Vinhas', '2020-04-22', 'Nunc non vestibulum ipsum, a vulputate enim.', 'Nulla hendrerit lacus at elit viverra malesuada. Aliquam ut mattis velit. Etiam consequat mattis dapibus. Etiam cursus arcu in sodales gravida. Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 0, 0, 1, 1);
-        $values_3 = array(3, 'Praesent in pretium arcu.', 'Micael Vinhas', '2020-04-30', 'Aliquam erat volutpat.', 'Morbi maximus mauris sed dolor fringilla, in accumsan augue tempus. Ut pharetra tincidunt magna at imperdiet. Ut faucibus felis nulla, sit amet bibendum ex fermentum non. ', 0, 0, 1, 1);
-        $values_4 = array(4, 'Curabitur sit amet lobortis purus.', 'Micael Vinhas', '2020-04-19', 'Morbi non mattis nisi.', 'Vestibulum molestie efficitur facilisis. Sed finibus feugiat odio et blandit. Aenean at enim eget augue egestas pretium. Nunc eget tellus eget risus aliquam malesuada sed at turpis. Donec hendrerit ullamcorper mi, in rutrum tortor bibendum quis. Donec luctus consectetur turpis at sodales. Curabitur sit amet lobortis purus.',  0, 0, 1, 0);
-        $values_5 = array(5, 'Ut auctor consequat arcu, at accumsan sem semper quis.', 'Micael Vinhas', '2020-04-11', 'Nam vehicula blandit lorem, at gravida lorem rutrum sit amet.', 'Curabitur sit amet lobortis purus. Donec luctus, libero vitae faucibus dapibus, ante ligula iaculis libero, a ornare sapien urna at nunc.', 0, 0, 1, 0);
-        $values_6 = array(6, 'Aliquam pretium odio ac lorem mattis pellentesque.', 'Micael Vinhas', '2020-04-04', 'Donec tincidunt venenatis venenatis.', 'Ut sollicitudin, dolor in interdum cursus, felis ante suscipit ante, non laoreet ex velit ac ligula. Maecenas turpis enim, luctus nec eleifend a, consequat in orci. Maecenas egestas accumsan lacinia. Duis a elit eget justo finibus dapibus sed at augue. Fusce porttitor ut nisl eu posuere.',  0, 0, 1, 0);
+
+        $this->query->insert($table)->set([
+            'category' => 1,
+            'title' => 'Fusce sit amet consectetur risus.',
+            'author' => 'Micael Vinhas',
+            'date' => '2020-04-07',
+            'short_content' => 'Integer consequat interdum egestas.',
+            'content' => 'Integer consequat interdum egestas. Sed mollis ornare erat non varius. Mauris congue, nunc quis porta condimentum, ligula tellus commodo velit, at cursus diam arcu in odio. Cras nisl quam, aliquam sit amet aliquam a, fermentum sit amet arcu. Integer molestie at tortor vel malesuada.',
+            'comments' => 0,
+            'likes' => 0,
+            'status' => 1,
+            'featured' => 2
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'category' => 2,
+            'title' => 'Vestibulum molestie efficitur facilisis.',
+            'author' => 'Micael Vinhas',
+            'date' => '2020-04-22',
+            'short_content' => 'Nunc non vestibulum ipsum, a vulputate enim.',
+            'content' => 'Nulla hendrerit lacus at elit viverra malesuada. Aliquam ut mattis velit. Etiam consequat mattis dapibus. Etiam cursus arcu in sodales gravida. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+            'comments' => 0,
+            'likes' => 0,
+            'status' => 1,
+            'featured' => 1
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'category' => 3,
+            'title' => 'Praesent in pretium arcu.',
+            'author' => 'Micael Vinhas',
+            'date' => '2020-04-30',
+            'short_content' => 'Aliquam erat volutpat.',
+            'content' => 'Morbi maximus mauris sed dolor fringilla, in accumsan augue tempus. Ut pharetra tincidunt magna at imperdiet. Ut faucibus felis nulla, sit amet bibendum ex fermentum non. ',
+            'comments' => 0,
+            'likes' => 0,
+            'status' => 1,
+            'featured' => 1
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'category' => 4,
+            'title' => 'Curabitur sit amet lobortis purus.',
+            'author' => 'Micael Vinhas',
+            'date' => '2020-04-19',
+            'short_content' => 'Morbi non mattis nisi.',
+            'content' => 'Vestibulum molestie efficitur facilisis. Sed finibus feugiat odio et blandit. Aenean at enim eget augue egestas pretium. Nunc eget tellus eget risus aliquam malesuada sed at turpis. Donec hendrerit ullamcorper mi, in rutrum tortor bibendum quis. Donec luctus consectetur turpis at sodales. Curabitur sit amet lobortis purus.',
+            'comments' => 0,
+            'likes' => 0,
+            'status' => 1,
+            'featured' => 0
+        ])->done();
         
-        $this->db->create($table, $fields, $values_1);
-        $this->db->create($table, $fields, $values_2);
-        $this->db->create($table, $fields, $values_3);
-        $this->db->create($table, $fields, $values_4);
-        $this->db->create($table, $fields, $values_5);
-        $this->db->create($table, $fields, $values_6);
+        $this->query->insert($table)->set([
+            'category' => 5,
+            'title' => 'Ut auctor consequat arcu, at accumsan sem semper quis.',
+            'author' => 'Micael Vinhas',
+            'date' => '2020-04-11',
+            'short_content' => 'Nam vehicula blandit lorem, at gravida lorem rutrum sit amet.',
+            'content' => 'Curabitur sit amet lobortis purus. Donec luctus, libero vitae faucibus dapibus, ante ligula iaculis libero, a ornare sapien urna at nunc.',
+            'comments' => 0,
+            'likes' => 0,
+            'status' => 1,
+            'featured' => 0
+        ])->done();
+
+        $this->query->insert($table)->set([
+            'category' => 6,
+            'title' => 'Aliquam pretium odio ac lorem mattis pellentesque.',
+            'author' => 'Micael Vinhas',
+            'date' => '2020-04-04',
+            'short_content' => 'Donec tincidunt venenatis venenatis.',
+            'content' => 'Ut sollicitudin, dolor in interdum cursus, felis ante suscipit ante, non laoreet ex velit ac ligula. Maecenas turpis enim, luctus nec eleifend a, consequat in orci. Maecenas egestas accumsan lacinia. Duis a elit eget justo finibus dapibus sed at augue. Fusce porttitor ut nisl eu posuere.',
+            'comments' => 0,
+            'likes' => 0,
+            'status' => 1,
+            'featured' => 0
+        ])->done();
+
     }
 
     private function insertAbout()
     {
         $table = 'about';
-        $fields = '`name`';
-        $values = array('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean at enim ut.');
 
-        $this->db->create($table, $fields, $values);
+        $this->query->insert($table)->set([
+            'name' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean at enim ut.'
+        ])->done();
     }
 
     private function insertAdmin()
     {
         $table = 'users';
-        $fields = '`email`, `username`, `password`, `role`, `reg_date`, `active`';
-        $values = array(OWNER, OWNER, password_hash(OWNER, PASSWORD_DEFAULT), 'admin', date('Y-m-d H:i:s'), 1);
+        
+        $splitemail = explode('@', OWNER);
 
-        $this->db->create($table, $fields, $values);
+        $this->query->insert($table)->set([
+            'email' => OWNER,
+            'username' => $splitemail[0],
+            'password' => password_hash($splitemail[0], PASSWORD_DEFAULT),
+            'role' => 'admin',
+            'reg_date' => date('Y-m-d H:i:s'),
+            'active' => 1
+        ])->done();
     }
 
     private function insertSocial()
@@ -300,5 +413,11 @@ class Setup
         $fields = '`name`, `link`, `visible`';
         $values = array('LinkedIn', 'https://www.linkedin.com/in/micael-vinhas-74bab1112', 1);
         $this->db->create($table, $fields, $values);
+
+        $this->query->insert($table)->set([
+            'name' => 'LinkedIn',
+            'link' =>'https://www.linkedin.com/in/micael-vinhas-74bab1112',
+            'visible' => 1
+        ])->done();
     }
 }
