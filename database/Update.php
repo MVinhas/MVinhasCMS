@@ -1,9 +1,10 @@
 <?php
 namespace Database;
 
-use \Database\Interfaces\QueryInterface;
+use Database\Interfaces\QueryInterface;
+use Database\Query;
 
-class Update
+class Update extends Query
 {
     protected $fields = array();
 
@@ -13,6 +14,7 @@ class Update
 
     public function __construct($table)
     {
+        parent::__construct();
         $this->table = $table;    
     }
 

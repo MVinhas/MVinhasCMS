@@ -1,12 +1,14 @@
 <?php
 namespace Database\Traits;
+use Database\Query;
 
 trait PrepareTrait
 {
     public function preparedStatement($sql, $field_count, $data)
     {
+        $query = new Query();
         $fields = $this->getValueTypes($field_count, $data);
-        $sql_prepare = $this->db->prepare($sql);
+        $sql_prepare = $query->db->prepare($sql);
         if (!empty($data))
             $sql_prepare->bind_param($fields, ...$data);
         return $sql_prepare;

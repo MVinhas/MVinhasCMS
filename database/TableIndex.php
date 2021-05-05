@@ -2,9 +2,9 @@
 namespace Database;
 
 use Database\Interfaces\QueryInterface;
-use Database\SanitizeQuery;
+use Database\Query;
 
-class TableIndex
+class TableIndex extends Query
 {
     public $table;
 
@@ -16,6 +16,7 @@ class TableIndex
 
     public function __construct($table)
     {
+        parent::__construct();
         $this->table = $table;    
     }
 

@@ -2,18 +2,20 @@
 namespace Database;
 
 use Database\Interfaces\QueryInterface;
-use Database\SanitizeQuery;
+use Database\Query;
 
-class Create extends SanitizeQuery implements QueryInterface 
+class Create extends Query implements QueryInterface 
 {
     use Traits\PrepareTrait;
+    use Traits\SanitizeQueryTrait;
     public $table;
 
     public $set;
 
     public function __construct($table)
     {
-        $this->table = $table;    
+        parent::__construct();
+        $this->table = $table;
     }
 
     public function set($args)

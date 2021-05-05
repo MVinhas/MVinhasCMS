@@ -2,10 +2,12 @@
 namespace Database;
 
 use \Database\Interfaces\QueryInterface;
+use Database\Query;
 
-class Insert extends SanitizeQuery implements QueryInterface
+class Insert extends Query implements QueryInterface
 {
     use Traits\PrepareTrait;
+    use Traits\SanitizeQueryTrait;
 
     protected $fields;
 
@@ -15,6 +17,7 @@ class Insert extends SanitizeQuery implements QueryInterface
 
     public function __construct($table)
     {
+        parent::__construct();
         $this->table = $table;    
     }
 
@@ -54,9 +57,10 @@ class Insert extends SanitizeQuery implements QueryInterface
     public function done()
     {
         $values = explode(', ', $this->values);
+        $prepared = array();
 
-        foreach ($values as $value) {
-            $prepared[] = str_replace($value, '?', $values);
+        foreach ($values as $k => $v) {
+            $prepared[] = str_replace($v, '?', $v);
         }
 
         $preparedQuery = str_replace($this->values, implode(', ', $prepared), $this->queryBuilder());

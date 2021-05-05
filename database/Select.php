@@ -2,9 +2,9 @@
 namespace Database;
 
 use Database\Interfaces\QueryInterface;
-use Database\SanitizeQuery;
+use Database\Query;
 
-class Select extends SanitizeQuery implements QueryInterface 
+class Select extends Query implements QueryInterface 
 {
     use Traits\PrepareTrait;
     public $table;
@@ -13,6 +13,7 @@ class Select extends SanitizeQuery implements QueryInterface
 
     public function __construct($table)
     {
+        parent::__construct();
         $this->table = $table;    
     }
 

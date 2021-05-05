@@ -2,8 +2,9 @@
 namespace Database;
 
 use \Database\Interfaces\QueryInterface;
+use Database\Query;
 
-class Delete implements QueryInterface
+class Delete extends Query implements QueryInterface
 {
     public $table;
 
@@ -11,6 +12,7 @@ class Delete implements QueryInterface
 
     public function __construct($table)
     {
+        parent::__construct();
         $this->table = $table;    
     }
 

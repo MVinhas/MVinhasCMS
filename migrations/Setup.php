@@ -45,7 +45,7 @@ class Setup
             'siteauthor' => 'VARCHAR(100) NOT NULL',
             'launchyear' => 'INT(4) NOT NULL DEFAULT '.date('Y')
         );
-        $this->query->create(__FUNCTION__)->set($fields)->done();
+        $this->query::create(__FUNCTION__)->set($fields)->done();
     }
 
     private function users()
@@ -59,7 +59,7 @@ class Setup
             'reg_date' => 'TIMESTAMP',
             'active' => 'INT(11) NOT NULL DEFAULT 0'
         );
-        $this->query->create(__FUNCTION__)->set($fields)->done();
+        $this->query::create(__FUNCTION__)->set($fields)->done();
     }
 
     private function articles()
@@ -79,9 +79,9 @@ class Setup
             'status' => 'INT(1) NOT NULL',
             'featured' => 'INT(1) NOT NULL DEFAULT 0'
         );
-        $this->query->create(__FUNCTION__)->set($fields)->done();
-        $this->query->tableIndex(__FUNCTION__)->constraint('status')->value('status')->done();
-        $this->query->tableIndex(__FUNCTION__)->constraint('category_status')->value('category, status')->done();
+        $this->query::create(__FUNCTION__)->set($fields)->done();
+        $this->query::tableIndex(__FUNCTION__)->constraint('status')->value('status')->done();
+        $this->query::tableIndex(__FUNCTION__)->constraint('category_status')->value('category, status')->done();
     }
 
     private function comments()
@@ -94,7 +94,7 @@ class Setup
             'likes' => 'INT(11) NOT NULL',
             'status' => 'INT(1) NOT NULL'
         );
-        $this->query->create(__FUNCTION__)->set($fields)->done();
+        $this->query::create(__FUNCTION__)->set($fields)->done();
     }
 
     private function categories()
@@ -103,7 +103,7 @@ class Setup
             'id' => 'INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY',
             'name' => 'VARCHAR(64) NOT NULL UNIQUE KEY'
         );
-        $this->query->create(__FUNCTION__)->set($fields)->done();
+        $this->query::create(__FUNCTION__)->set($fields)->done();
     }
 
     private function pages()
@@ -119,10 +119,10 @@ class Setup
             'menu' => 'INT(1) NOT NULL DEFAULT 0',
             'footer' => 'INT(1) NOT NULL DEFAULT 0'
         );
-        $this->query->create(__FUNCTION__)->set($fields)->done();
+        $this->query::create(__FUNCTION__)->set($fields)->done();
 
-        $this->query->tableIndex(__FUNCTION__)->constraint('id_name')->type("UNIQUE_KEY")->value('id, name')->done();
-        $this->query->tableIndex(__FUNCTION__)->constraint('header')->value('header')->done();
+        $this->query::tableIndex(__FUNCTION__)->constraint('id_name')->type("UNIQUE_KEY")->value('id, name')->done();
+        $this->query::tableIndex(__FUNCTION__)->constraint('header')->value('header')->done();
     }
 
     private function controllers()
@@ -131,7 +131,7 @@ class Setup
             'id' => 'INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY',
             'name' => 'VARCHAR(64) NOT NULL UNIQUE KEY'
         );
-        $this->query->create(__FUNCTION__)->set($fields)->done();
+        $this->query::create(__FUNCTION__)->set($fields)->done();
     }
 
     private function methods()
@@ -141,7 +141,7 @@ class Setup
             'name' => 'VARCHAR(64) NOT NULL UNIQUE KEY',
             'controller' => 'INT(3) NOT NULL DEFAULT 0'
         );
-        $this->query->create(__FUNCTION__)->set($fields)->done();
+        $this->query::create(__FUNCTION__)->set($fields)->done();
     }
 
     private function tags()
@@ -150,7 +150,7 @@ class Setup
             'id' => 'INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY',
             'name' => 'VARCHAR(64) NOT NULL UNIQUE KEY'
         );
-        $this->query->create(__FUNCTION__)->set($fields)->done();  
+        $this->query::create(__FUNCTION__)->set($fields)->done();  
     }
 
     private function about()
@@ -159,7 +159,7 @@ class Setup
             'id' => 'INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY',
             'name' => 'TEXT NULL' 
         );
-        $this->query->create(__FUNCTION__)->set($fields)->done();
+        $this->query::create(__FUNCTION__)->set($fields)->done();
     }
 
     private function social()
@@ -170,8 +170,8 @@ class Setup
             'link' => 'VARCHAR(256) NOT NULL',
             'visible' => 'INT(1) NOT NULL DEFAULT 1'
         );
-        $this->query->create(__FUNCTION__)->set($fields)->done();
-        $this->query->tableIndex(__FUNCTION__)->constraint('visible')->value('visible')->done();
+        $this->query::create(__FUNCTION__)->set($fields)->done();
+        $this->query::tableIndex(__FUNCTION__)->constraint('visible')->value('visible')->done();
     }
 
     private function sessions()
@@ -181,16 +181,16 @@ class Setup
             'session' => 'VARCHAR(32) NOT NULL',
             'firstvisit' => 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP'
         );
-        $this->query->create(__FUNCTION__)->set($fields)->done();
+        $this->query::create(__FUNCTION__)->set($fields)->done();
 
-        $this->query->tableIndex(__FUNCTION__)->constraint('session')->value('session')->done();
+        $this->query::tableIndex(__FUNCTION__)->constraint('session')->value('session')->done();
     }
 
     private function insertConfig()
     {
         $table = 'config';
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'sitename' => 'My CMS Blog',
             'email' => 'jackbogle@example.com',
             'siteversion' => '1.0.0',
@@ -202,11 +202,11 @@ class Setup
     {
         $table = 'controllers';
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'Home'
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'Admin'
         ])->done();
     }
@@ -215,12 +215,12 @@ class Setup
     {
         $table = 'methods';
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'setup',
             'controller' => 1
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'login',
             'controller' => 2
         ])->done();
@@ -230,7 +230,7 @@ class Setup
     {
         $table = 'pages';
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'Register',
             'method' => 1,
             'active' => 1,
@@ -239,7 +239,7 @@ class Setup
             'footer' => 0
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'Login',
             'method' => 2,
             'active' => 1,
@@ -253,47 +253,47 @@ class Setup
     {
         $table = 'categories';
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'Programming'
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'Hardware'
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'Mobility'
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'Software'
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'Linux'
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'macOS'
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'Windows'
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'Gaming'
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'Music'
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'Lifestyle'
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'PC Buyers Guide'
         ])->done();
     }
@@ -302,7 +302,7 @@ class Setup
     {
         $table = 'articles';
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'category' => 1,
             'title' => 'Fusce sit amet consectetur risus.',
             'author' => 'Micael Vinhas',
@@ -315,7 +315,7 @@ class Setup
             'featured' => 2
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'category' => 2,
             'title' => 'Vestibulum molestie efficitur facilisis.',
             'author' => 'Micael Vinhas',
@@ -328,7 +328,7 @@ class Setup
             'featured' => 1
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'category' => 3,
             'title' => 'Praesent in pretium arcu.',
             'author' => 'Micael Vinhas',
@@ -341,7 +341,7 @@ class Setup
             'featured' => 1
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'category' => 4,
             'title' => 'Curabitur sit amet lobortis purus.',
             'author' => 'Micael Vinhas',
@@ -354,7 +354,7 @@ class Setup
             'featured' => 0
         ])->done();
         
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'category' => 5,
             'title' => 'Ut auctor consequat arcu, at accumsan sem semper quis.',
             'author' => 'Micael Vinhas',
@@ -367,7 +367,7 @@ class Setup
             'featured' => 0
         ])->done();
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'category' => 6,
             'title' => 'Aliquam pretium odio ac lorem mattis pellentesque.',
             'author' => 'Micael Vinhas',
@@ -386,7 +386,7 @@ class Setup
     {
         $table = 'about';
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean at enim ut.'
         ])->done();
     }
@@ -397,7 +397,7 @@ class Setup
         
         $splitemail = explode('@', OWNER);
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'email' => OWNER,
             'username' => $splitemail[0],
             'password' => password_hash($splitemail[0], PASSWORD_DEFAULT),
@@ -412,9 +412,8 @@ class Setup
         $table = 'social';
         $fields = '`name`, `link`, `visible`';
         $values = array('LinkedIn', 'https://www.linkedin.com/in/micael-vinhas-74bab1112', 1);
-        $this->db->create($table, $fields, $values);
 
-        $this->query->insert($table)->set([
+        $this->query::insert($table)->set([
             'name' => 'LinkedIn',
             'link' =>'https://www.linkedin.com/in/micael-vinhas-74bab1112',
             'visible' => 1
