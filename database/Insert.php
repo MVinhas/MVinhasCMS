@@ -31,7 +31,7 @@ class Insert extends Query implements QueryInterface
         foreach ($args as $k => $v) {
             if (empty($k) || empty($v)) continue;
             $fields[] = "`".$k."`";
-            $values[] = "'{$v}'";
+            $values[] = "$v";
         }
 
         $this->fields = implode(', ', $fields);
