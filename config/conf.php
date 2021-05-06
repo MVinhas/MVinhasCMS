@@ -9,10 +9,10 @@ require_once 'vendor/autoload.php';
 
 require_once 'engine/DbOperations.php';
 
-define('LIKE', 'LIKE $1');
-define('LIKE_START', 'LIKE $1%');
-define('LIKE_END', 'LIKE %1$');
-define('LIKE_SOMEWHERE', 'LIKE %$1%');
+define('LIKE', "LIKE $1");
+define('LIKE_START', "LIKE $1%");
+define('LIKE_END', "LIKE %1$");
+define('LIKE_SOMEWHERE', "LIKE %$1%");
 
 try {
     $config_flags = new \engine\DbOperations();
