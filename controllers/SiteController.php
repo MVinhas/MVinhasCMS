@@ -24,6 +24,7 @@ class SiteController extends Controller
     public function index()
     {
         $get = $this->globals->get();
+        
         try {
             $this->model->visitCounter();
         } catch (\Error $e) {
@@ -32,8 +33,10 @@ class SiteController extends Controller
         Dispatcher::metadata();
         $this->head();
 
-        $getKeys = array_keys($get);
-        if (!empty($getKeys[0])) {
+        if (isset($get))
+            $getKeys = array_keys($get);
+
+        if (isset($getKeys) && !empty($getKeys[0])) {
             $key_method = substr($getKeys[0], strpos($getKeys[0], "/") + 1);
             $key_func = substr($getKeys[0], 0, strpos($getKeys[0], "/"));   
         }
