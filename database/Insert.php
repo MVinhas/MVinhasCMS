@@ -3,6 +3,7 @@ namespace Database;
 
 use \Database\Interfaces\QueryInterface;
 use Database\Query;
+use Exception;
 
 class Insert extends Query implements QueryInterface
 {
@@ -12,6 +13,8 @@ class Insert extends Query implements QueryInterface
     protected $fields;
 
     protected $values;
+
+    protected $valuesPacked;
 
     protected $table;
 
@@ -23,7 +26,7 @@ class Insert extends Query implements QueryInterface
 
     public static function table(string $table)
     {
-        return new Insert($table);
+        return parent::insert($table);
     }
 
     public function set($args)
@@ -31,11 +34,16 @@ class Insert extends Query implements QueryInterface
         foreach ($args as $k => $v) {
             if (empty($k) || empty($v)) continue;
             $fields[] = "`".$k."`";
-            $values[] = "$v";
+            if ((int)$v === $v) {
+                $values[] = $v;
+            } else {
+                $values[] = "$v";
+            }
         }
 
         $this->fields = implode(', ', $fields);
         $this->values = implode(', ', $values);
+        $this->valuesPacked = $values;
 
         return $this;
     }
@@ -56,7 +64,7 @@ class Insert extends Query implements QueryInterface
     
     public function done()
     {
-        $values = explode(', ', $this->values);
+        $values = $this->valuesPacked;
         $prepared = array();
 
         foreach ($values as $k => $v) {
@@ -66,13 +74,13 @@ class Insert extends Query implements QueryInterface
         $preparedQuery = str_replace($this->values, implode(', ', $prepared), $this->queryBuilder());
 
         $this->entityEncode($values);
-
         $statement = $this->preparedStatement($preparedQuery, count($prepared), $values);
 
-        if ($statement->execute()) {
+        try {
             return $statement->execute();
+        } catch (Exception $e) {
+            return $e;
         }
-        return "KO";
 
     }
 

@@ -80,8 +80,6 @@ class Setup
             'featured' => 'INT(1) NOT NULL DEFAULT 0'
         );
         $this->query::create(__FUNCTION__)->set($fields)->done();
-        $this->query::tableIndex(__FUNCTION__)->constraint('status')->value('status')->done();
-        $this->query::tableIndex(__FUNCTION__)->constraint('category_status')->value('category, status')->done();
     }
 
     private function comments()
@@ -121,8 +119,7 @@ class Setup
         );
         $this->query::create(__FUNCTION__)->set($fields)->done();
 
-        $this->query::tableIndex(__FUNCTION__)->constraint('id_name')->type("UNIQUE_KEY")->value('id, name')->done();
-        $this->query::tableIndex(__FUNCTION__)->constraint('header')->value('header')->done();
+        $this->query::tableIndex(__FUNCTION__)->constraint('id_name')->type("UNIQUE")->value('id, name')->done();
     }
 
     private function controllers()
@@ -171,7 +168,6 @@ class Setup
             'visible' => 'INT(1) NOT NULL DEFAULT 1'
         );
         $this->query::create(__FUNCTION__)->set($fields)->done();
-        $this->query::tableIndex(__FUNCTION__)->constraint('visible')->value('visible')->done();
     }
 
     private function sessions()
@@ -182,8 +178,6 @@ class Setup
             'firstvisit' => 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP'
         );
         $this->query::create(__FUNCTION__)->set($fields)->done();
-
-        $this->query::tableIndex(__FUNCTION__)->constraint('session')->value('session')->done();
     }
 
     private function insertConfig()

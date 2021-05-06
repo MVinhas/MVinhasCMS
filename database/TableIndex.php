@@ -40,10 +40,8 @@ class TableIndex extends Query
 
     public function done()
     {
-        $type = '';
-        if (isset($this->type)) $type = $this->type;
-
-        $sql = "ALTER TABLE $this->table ADD CONSTRAINT $this->constraint $type($this->value)";
+  
+        $sql = "ALTER TABLE $this->table ADD CONSTRAINT $this->constraint $this->type($this->value)";
         $sql = $this->db->real_escape_string($sql);
         return $this->db->query($sql);   
     }

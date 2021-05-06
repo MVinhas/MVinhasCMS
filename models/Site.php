@@ -3,7 +3,7 @@
 
     use \engine\DbOperations as DbOperations;
     use \controllers\SiteController as SiteController;
-    
+
 class Site extends Model
 {
     protected $db;
@@ -15,6 +15,7 @@ class Site extends Model
     public function visitCounter()
     {
         $data = array(session_id());
+
         $visit = $this->db->select('sessions', 'id', 'session = ?', $data);
 
         if (empty($visit)) {

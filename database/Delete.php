@@ -18,7 +18,7 @@ class Delete extends Query implements QueryInterface
 
     public static function table(string $table)
     {
-        return new Delete($table);
+        return parent::delete($table);
     }
 
     public function queryBuilder()
