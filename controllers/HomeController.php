@@ -23,7 +23,7 @@ class HomeController extends Controller
     public function index()
     {
         $offset = 0;
-        if ($this->globals->get('page')) {
+        if ($page = $this->globals->get('page')) {
             $offset += ($page * 5);
             $out['page'] = $page;
         }
