@@ -70,17 +70,12 @@ class Insert extends Query implements QueryInterface
         foreach ($values as $k => $v) {
             $prepared[] = str_replace($v, '?', $v);
         }
-
+        
         $preparedQuery = str_replace($this->values, implode(', ', $prepared), $this->queryBuilder());
-
         $this->entityEncode($values);
         $statement = $this->preparedStatement($preparedQuery, count($prepared), $values);
 
-        try {
-            return $statement->execute();
-        } catch (Exception $e) {
-            return $e;
-        }
+        return $statement->execute();
 
     }
 
