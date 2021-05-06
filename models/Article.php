@@ -1,7 +1,7 @@
 <?php
     namespace models;
 
-    use \engine\DbOperations as DbOperations;
+    use \database\Query as Query;
     use \controllers\ArticleController as ArticleController;
     
 class Article extends Model
@@ -9,13 +9,17 @@ class Article extends Model
     protected $db;
     public function __construct()
     {
-        $this->db = new DbOperations;
+        $this->db = new Query;
     }
 
     public function getCurrentArticles(string $month = '01', int $year = 1970)
     {
         $data = array($month, $year);
-        $articles = $this->db->select('articles', '*', 'DATE_FORMAT(date, "%m") LIKE ? AND DATE_FORMAT(date, "%Y") LIKE ?', $data);
+        $articles = $this->db::select('articles')->where([
+            ['DATE_FORMAT(date, "%m")' => $month, LIKE],
+            ['DATE_FORMAT(date, "%Y")' => $year, LIKE]
+        ])->done()->all();
+        //$articles = $this->db->select('articles', '*', 'DATE_FORMAT(date, "%m") LIKE ? AND DATE_FORMAT(date, "%Y") LIKE ?', $data);
         return $articles;   
     }
 
