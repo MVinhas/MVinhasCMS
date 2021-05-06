@@ -74,9 +74,9 @@ class Setup
             'short_content' => 'VARCHAR(100)',
             'content' => 'TEXT',
             'tags' => 'VARCHAR(255)',
-            'comments' => 'INT(11) NOT NULL',
-            'likes' => 'INT(11) NOT NULL',
-            'status' => 'INT(1) NOT NULL',
+            'comments' => 'INT(11) NOT NULL DEFAULT 0',
+            'likes' => 'INT(11) NOT NULL DEFAULT 0',
+            'status' => 'INT(1) NOT NULL DEFAULT 0',
             'featured' => 'INT(1) NOT NULL DEFAULT 0'
         );
         $this->query::create(__FUNCTION__)->set($fields)->done();
@@ -90,7 +90,7 @@ class Setup
             'date' => 'DATE',
             'content' => 'TEXT',
             'likes' => 'INT(11) NOT NULL',
-            'status' => 'INT(1) NOT NULL'
+            'status' => 'INT(1) NOT NULL DEFAULT 0'
         );
         $this->query::create(__FUNCTION__)->set($fields)->done();
     }
@@ -111,7 +111,7 @@ class Setup
             'name' => 'VARCHAR(64) NOT NULL',
             'short_content' => 'VARCHAR(512) NULL',
             'content' => 'TEXT NULL',
-            'method' => 'INT(11) NOT NULL',
+            'method' => 'INT(11) NOT NULL DEFAULT 0',
             'active' => 'INT(1) NOT NULL DEFAULT 1',
             'header' => 'INT(1) NOT NULL DEFAULT 0',
             'menu' => 'INT(1) NOT NULL DEFAULT 0',
