@@ -7,9 +7,12 @@ use Database\Query;
 class Select extends Query implements QueryInterface 
 {
     use Traits\PrepareTrait;
+    use Traits\SanitizeQueryTrait;
     public $table;
 
     public $fields;
+
+    public $result;
 
     public function __construct($table)
     {
@@ -50,13 +53,27 @@ class Select extends Query implements QueryInterface
         return implode(' ', $query);
     }
 
-    public function where(array $condition)
+    public function where(array $condition, string $flag = '')
     {
         foreach ($condition as $k => $v) {
-            $this->where[] = strpos('!', (string)$v) === false ?  "`$k` = '{$v}'" : "`$k` != '{$v}'";
+            if (is_array($v)) {
+                $this->where($v, $v[0]);
+            } else {
+                if ($flag === '')
+                    $this->where[] = strpos('!', (string)$v) === false ?  "`$k` = '{$v}'" : "`$k` != '{$v}'";
+            }
             //PHP8 str_starts_with ( string $haystack , string $needle ) : bool
-
         }
+
+        //$condition[array_key_first($condition)] -> 04
+        //$condition[0] = LIKE $1
+        //array_key_first($condition) = DATE_FORMAT(date, "%m")
+        //WHERE array_key_first($condition)." ".$condition[0];
+        if ($flag === '') return $this;
+    
+        $replaceConst = str_replace('$1', $condition[array_key_first($condition)], $condition[0]);
+        $this->where[] = str_replace(' ','',(array_key_first($condition)))." ".$replaceConst;
+        
         return $this;
     }
 
@@ -68,44 +85,44 @@ class Select extends Query implements QueryInterface
     public function done()
     {
         $i = 0;
+        $values = array();
         foreach ($this->where as &$v) {
-            $condition = preg_split('/ !{0,}={0,}<{0,}>{0,} /', $v);
+            $condition = preg_split('/ !{0,}={0,}<{0,}>{0,}/', $v);
             $conditional = explode(' ', $v);
-            $values[] = $condition[1];
-            $condition[1] = '?';
-            $v = implode(" $conditional[1] ", [$condition[0], $condition[1]]);
+            $lastvalue = array_key_last($condition);
+            $values[] = $condition[$lastvalue];
+
+            $condition[$lastvalue] = '?';
+            $v = implode(" $conditional[1] ", [$conditional[0], $condition[$lastvalue]]);
             $i++;
         }
 
         $this->entityEncode($values);
 
         $sql = $this->queryBuilder();
-        
-        $statement = $this->preparedStatement($sql, $i, $values);
 
-        if ($statement->execute()) {
-            return $statement->execute();
-        }
-        return "KO";
+        $statement = $this->preparedStatement($sql, $i, $values);
+        
+        $statement->execute();
+        
+        $this->result = $statement;
+        return $this;
     }
 
     public function one()
-    {
-        if ($execute = $this->done()) {
-            $result = $execute->get_result();
-            return $result->fetch_assoc();   
-        }
+    {     
+        $result = $this->result->get_result();
+        return $result->fetch_assoc();  
     }
 
     public function all()
     {
-        if ($execute = $this->done()) {
-            $result = $execute->get_result();
-            while ($sql_retrieve = $result->fetch_assoc()) 
-                $sql_fetch[] = $sql_retrieve;
+        $result = $this->result->get_result();
+        $sql_fetch = array();
+        while ($sql_retrieve = $result->fetch_assoc()) 
+            $sql_fetch[] = $sql_retrieve;
 
-            return $sql_fetch;
-        }
+        return $sql_fetch;
     }
     
 

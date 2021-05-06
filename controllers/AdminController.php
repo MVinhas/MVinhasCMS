@@ -3,7 +3,7 @@
 namespace controllers;
 
 use \models\Admin as Admin;
-use \engine\Superglobas as Superglobals;
+use \engine\Superglobals as Superglobals;
 
 class AdminController extends Controller
 {

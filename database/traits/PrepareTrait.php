@@ -4,10 +4,11 @@ use Database\Query;
 
 trait PrepareTrait
 {
-    public function preparedStatement($sql, $field_count, $data)
+    public function preparedStatement($sql, $field_count, array $data = [])
     {
         $query = new Query();
         $fields = $this->getValueTypes($field_count, $data);
+        
         $sql_prepare = $query->db->prepare($sql);
         if (!empty($data))
             $sql_prepare->bind_param($fields, ...$data);
