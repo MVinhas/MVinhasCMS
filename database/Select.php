@@ -55,30 +55,31 @@ class Select extends Query implements QueryInterface
 
     public function where(array $condition, string $flag = '', string $delimiter = '')
     {
-        if (!empty($this->where) && $delimiter === '') {
-            $delimiter = 'AND';
-        } elseif (empty($this->where)) {
-            $delimiter = '';
-        }
-
+        
+        
         foreach ($condition as $k => $v) {
+            
+            if (!empty($this->where) && $delimiter === '') {
+                $delimiter = 'AND';
+            } elseif (empty($this->where)) {
+                $delimiter = '';
+            }
             if (is_array($v)) {
                 $this->where($v, $v[0]);
             } else {
-                if ($flag === '')
-                    $this->where[] = strpos('!', (string)$v) === false ?  "$delimiter `$k` = '{$v}'" : "$delimiter `$k` != '{$v}'";
+                if ($flag === '') {
+                    //PHP8 str_starts_with ( string $haystack , string $needle ) : bool
+                    $k = str_replace(' ','', $k);    
+                    $this->where[] = strpos('!', (string)$v) === false ?  trim("$delimiter $k = '{$v}'") : trim("$delimiter $k != '{$v}'");
+                }
             }
-            //PHP8 str_starts_with ( string $haystack , string $needle ) : bool
+            
         }
-
-        //$condition[array_key_first($condition)] -> 04
-        //$condition[0] = LIKE $1
-        //array_key_first($condition) = DATE_FORMAT(date, "%m")
-        //WHERE array_key_first($condition)." ".$condition[0];
         if ($flag === '') return $this;
-    
-        $replaceConst = str_replace('$1', $condition[array_key_first($condition)], $condition[0]);
+        
+        $replaceConst = str_replace('$1', $condition[array_key_first($condition)], $flag);
         $this->where[] = ltrim($delimiter.' '.str_replace(' ','',(array_key_first($condition)))." ".$replaceConst);
+        
         return $this;
     }
 
@@ -103,22 +104,25 @@ class Select extends Query implements QueryInterface
     {
         $i = 0;
         $values = array();
-        
         foreach ($this->where as &$v) {
-            $condition = preg_split('/!{0,}={0,}<{0,}>{0,}LIKE{0,}/', $v);
-           
-            preg_match('/!{0,}={0,}<{0,}>{0,}LIKE{0,}/', $v, $matches);
+            $condition = preg_split('/ !{0,}={0,}<{0,}>{0,}(LIKE|NOT LIKE){0,}/', $v, -1, PREG_SPLIT_NO_EMPTY);
+            if (in_array($condition[0], ['AND', 'OR'])) {
+                $condition[0] .= " $condition[1]";
+                unset($condition[1]);
+            }
             
+            preg_match('/(=|!=|like|not like|<|>)/i', $v, $matches);
             $lastvalue = array_key_last($condition);
             $values[] = trim($condition[$lastvalue]);
             $condition[$lastvalue] = '?';
-            $v = implode("$matches[0] ", [$condition[0], $condition[$lastvalue]]);
+            $v = implode(" $matches[0] ", [$condition[0], $condition[$lastvalue]]);
             $i++;
         }
-    
+        
         $this->entityEncode($values);
 
         $sql = $this->queryBuilder();
+
         $statement = $this->preparedStatement($sql, $i, $values);
         
         $statement->execute();
