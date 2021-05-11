@@ -16,7 +16,7 @@ class Site extends Model
         $visit = Query::select('sessions')->fields('id')->where(['session' => session_id()])->done()->one();
 
         if (empty($visit)) {
-            Query::create('sessions')->set([
+            Query::insert('sessions')->set([
                 'session' => session_id(),
                 'firstvisit' => date('Y-m-d')
             ])->done();
