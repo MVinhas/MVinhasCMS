@@ -14,6 +14,14 @@ class Select extends Query implements QueryInterface
 
     public $result;
 
+    public $orderBy;
+
+    public $groupBy;
+
+    public $offset;
+
+    public $limit;
+
     public function __construct($table)
     {
         parent::__construct();
@@ -49,6 +57,18 @@ class Select extends Query implements QueryInterface
 
         if (!empty($this->where))
             $query[] = "WHERE ".implode(" ", $this->where);
+
+        if ($this->orderBy !== '')
+            $query[] = $this->orderBy;
+
+        if ($this->groupBy !== '')
+            $query[] = $this->groupBy;
+        
+        if ($this->limit !== '')
+            $query[] = $this->limit;
+
+        if ($this->offset !== '')
+            $query[] = $this->offset;
 
         return implode(' ', $query);
     }
@@ -93,6 +113,31 @@ class Select extends Query implements QueryInterface
     {  
         $this->where($condition, $flag, 'OR');
         return $this;
+    }
+
+    public function groupBy(string $orderBy)
+    {
+        $this->groupBy = "GROUP BY ".$orderBy;
+        return $this;
+    }
+
+    public function orderBy(string $orderBy)
+    {
+        $this->orderBy = "ORDER BY ".$orderBy;
+        return $this;
+    }
+
+    public function limit(string $limit = '0,1')
+    {
+        $this->limit = "LIMIT $limit";
+        return $this;
+    }
+
+    public function offset(int $offset = 0)
+    {
+        $this->offset = "OFFSET $offset";
+        return $this;
+
     }
 
     public function raw()
