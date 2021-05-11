@@ -101,20 +101,6 @@ class CPanel extends Model
         ->done();
     }
 
-    public function editConfig(array $article)
-    {
-        $exists = $this->db->select('config', '*');
-
-        if (!empty($exists)) {
-            $data = array(1);
-            $this->db->update('config', 'debugmode = ?, sitename = ?, email = ?, siteversion = ?, siteauthor = ?, launchyear = ?', $article, 'id = ?', $data);
-        } else {
-            $article['id'] = 1;
-            $this->db->create('config', 'debugmode, sitename, email, siteversion, siteauthor, launchyear, id', $article); 
-        }
-        
-    }
-
     public function deleteArticle(int $id)
     {
         $this->db::delete('articles')
