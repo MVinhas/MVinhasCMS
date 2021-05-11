@@ -43,11 +43,4 @@ class Site extends Model
 
         return $category;
     }
-
-    public function getConfig()
-    {
-        $config = $this->db->select('config', '*');
-
-        return $config;
-    }
 }
