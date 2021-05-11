@@ -1,7 +1,7 @@
 <?php
     namespace models;
 
-    use \engine\DbOperations as DbOperations;
+    use \database\Query as Query;
     use \controllers\CPanelController as CPanelController;
     use \engine\Superglobals as Superglobals;
     
@@ -10,12 +10,12 @@ class CPanel extends Model
     protected $db;
     public function __construct()
     {
-        $this->db = new DbOperations;
+        $this->db = new Query;
     }
 
     public function getArticles()
     {
-        $articles = $this->db->select('articles', '*');
+        $articles = $this->db::select('articles')->done()->all();
 
         return $articles;    
     }
@@ -24,11 +24,27 @@ class CPanel extends Model
     {
         $globals = new Superglobals();
         $files = $globals->files(); 
+
         $article['date'] = date('Y-m-d');
         $article['comments'] = 0;
         $article['likes'] = 0;
         $article['status'] = 1;
-        $insert_id = $this->db->create('articles', 'title, category, author, short_content, content, featured, date, comments, likes, status', $article);
+
+        $insert_id = $this->db::insert('articles')
+        ->set([
+            'title' => $article['title'],
+            'category' => $article['category'],
+            'author' => $article['author'],
+            'short_content' => $article['short_content'],
+            'content' => $article['content'],
+            'featured' => $article['featured'],
+            'date' => $article['date'],
+            'comments' => $article['comments'],
+            'likes' => $article['likes'],
+            'status' => $article['status']
+        ])
+        ->done();
+
         if (isset($files['avatar'])) {
             $directory = 'images/article';
             $img = explode('.', $files['avatar']['name']);
@@ -44,31 +60,45 @@ class CPanel extends Model
     public function editArticle(int $id, array $article)
     {
         $globals = new Superglobals();
-        $files = $globals->files(); 
-        $data = array($id);
+        $files = $globals->files();
+        $article['banner'] = '';
         if (isset($files['avatar'])) {
             $directory = 'images/article';
             $img = explode('.', $files['avatar']['name']);
             $name = 'article_'.$id.'.'.$img[1];
             $tmp_name = $files['avatar']['tmp_name'];
             move_uploaded_file($tmp_name, "$directory/$name");
-            $article['banner'] = "$directory/$name";
-            $this->db->update('articles', 'title = ?, category = ?, author = ?, short_content = ?, content = ?, featured = ?, banner = ?', $article, 'id = ?', $data);
-        } else {
-            $this->db->update('articles', 'title = ?, category = ?, author = ?, short_content = ?, content = ?, featured = ?', $article, 'id = ?', $data);
+            $article['banner'] = "$directory/$name";    
         }
+
+        $this->db::update('articles')
+        ->set([
+            'title' => $article['title'],
+            'category' => $article['category'],
+            'author' => $article['author'],
+            'short_content' => $article['short_content'],
+            'content' => $article['content'],
+            'featured' => $article['featured'],
+            'banner' => $article['banner']
+        ])
+        ->where(['id' => $id])
+        ->done();
         
     }
 
     public function createCategory(array $article)
     {
-        $this->db->create('categories', 'name', $article);
+        $this->db::insert('categories')
+        ->set(['name' => $article['name']])
+        ->done();
     }
     
     public function editCategory(int $id, array $article)
     {
-        $data = array($id);
-        $this->db->update('categories', 'name = ?', $article, 'id = ?', $data); 
+        $this->db::update('categories')
+        ->set(['name' => $article['name']])
+        ->where(['id' => $id])
+        ->done();
     }
 
     public function editConfig(array $article)
@@ -87,20 +117,26 @@ class CPanel extends Model
 
     public function deleteArticle(int $id)
     {
-        $data = array($id);
-        $this->db->delete('articles', 'id = ?', $data);
+        $this->db::delete('articles')
+        ->where(['id' => $id])
+        ->done();
     }
 
     public function deleteCategory(int $id)
     {
-        $data = array($id);
-        $this->db->delete('categories', 'id = ?', $data);
+        $this->db::delete('articles')
+        ->where(['id' => $id])
+        ->done();
     }
 
     public function getVisits()
-    {      
-        $data = array(1);
-        $dates_query = $this->db->select('sessions', 'COUNT(session) AS session, firstvisit AS date', '1=? GROUP BY firstvisit', $data);
+    {
+        $dates_query = $this->db::select('sessions')
+        ->fields('COUNT(session) AS session', 'firstvisit AS date')
+        ->where(['1' => 1])
+        ->groupBy('firstvisit')
+        ->done()
+        ->one();
                        
         return $dates_query; 
     }

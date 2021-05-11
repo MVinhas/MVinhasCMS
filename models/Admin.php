@@ -15,8 +15,12 @@ class Admin extends Model
 
     public function getUser(string $username, string $password)
     {
-        $data = array($username);
-        $user = $this->db::select('users')->fields('username', 'email', 'password', 'role')->where(['username' => $username])->done()->one();
+        $user = $this->db::select('users')
+        ->fields('username', 'email', 'password', 'role')
+        ->where(['username' => $username])
+        ->done()
+        ->one();
+
         $password_verify = password_verify($password, $user['password']);
         
         if ($password_verify) {
