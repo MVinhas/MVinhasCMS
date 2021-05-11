@@ -6,16 +6,13 @@
     
 class Admin extends Model
 {
-    protected $db;
     public function __construct()
     {
-        $this->db = new Query;
     }
-        
 
     public function getUser(string $username, string $password)
     {
-        $user = $this->db::select('users')
+        $user = Query::select('users')
         ->fields('username', 'email', 'password', 'role')
         ->where(['username' => $username])
         ->done()

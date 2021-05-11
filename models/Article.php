@@ -6,15 +6,13 @@
     
 class Article extends Model
 {
-    protected $db;
     public function __construct()
     {
-        $this->db = new Query;
     }
 
     public function getCurrentArticles(string $month = '01', int $year = 1970)
     {
-        $articles = $this->db::select('articles')
+        $articles = Query::select('articles')
         ->where(['DATE_FORMAT(date, "%m")' => $month], LIKE)
         ->andWhere(['DATE_FORMAT(date, "%Y")' => $year], LIKE)
         ->done()
@@ -25,7 +23,7 @@ class Article extends Model
 
     public function getArticlesByCategory(string $category)
     {
-        $articles = $this->db::select('articles')
+        $articles = Query::select('articles')
         ->where(['category' => $category])
         ->andWhere(['status' => 1])
         ->done()

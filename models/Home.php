@@ -1,20 +1,19 @@
 <?php
     namespace models;
 
-    use \engine\DbOperations as DbOperations;
+    use \database\Query as Query;
     use \controllers\HomeController as HomeController;
     
 class Home extends Model
 {
-    protected $db;
+
     public function __construct()
     {
-        $this->db = new DbOperations;
     }
         
     public function checkUsers()
     {
-        $getUsers = $this->db->select('users');
+        $getUsers = Query::select('users')->done()->all();
   
         if (is_array($getUsers)) {
             return true;
@@ -25,8 +24,7 @@ class Home extends Model
 
     public function checkAdmin()
     {
-        $data = array('admin');
-        $admin_exists = $this->db->select('users','id','role = ?', $data);
+        $admin_exists = Query::select('users')->fields('id')->where(['role' => 'admin']);
         if (!empty($admin_exists))
             return 1;
         return 0;
@@ -34,7 +32,9 @@ class Home extends Model
 
     public function createUser(string $fields, array $values)
     {
-        $createUser = $this->db->create('users', $fields, $values);
+        
+        //I need to send the data to this function in another way
+        //$createUser = Query::insert('users')->set([])->done();
 
         if ($createUser === true) {
             return 1;
@@ -45,27 +45,29 @@ class Home extends Model
 
     public function getArticles(int $offset = 0)
     {
-        $data = array(1);
-        $articles = $this->db->select('articles','*', 'status = ? ORDER BY id DESC LIMIT 5 OFFSET '.$offset, $data);
+        $articles = Query::select('articles')->where(['status' => 1])->orderBy('id DESC')->limit(5)->offset($offset)->done()->all();
         foreach ($articles as $k => $v) {
-            $data = array($v['category']);
-            $category = $this->db->select('categories','*','id = ? ORDER BY id ASC', $data);
+            $category = Query::select('categories')->where(['id' => $v['category']])->orderBy('id ASC')->done()->one();
             !empty($category) ?? $articles[$k]['category_name'] = $category['name'] :: $articles[$k]['category_name'] = 'No Category';
         }
         return $articles;
     }
 
     public function getAbout()
-    {   
-        $data = array(1);
-        $about = $this->db->select('about','*','id = ?', $data);
+    { 
+        $about = Query::select('about')->where(['id' => 1])->done()->one();
         return $about;
     }
 
     public function getArchives()
     {
-        $data = array(1);
-        $rows = $this->db->select('articles', 'COUNT(*) AS Total, DATE_FORMAT(date, "%M %Y") AS date, DATE_FORMAT(date, "%m") as month, DATE_FORMAT(date, "%Y") as year ', '1= ? GROUP BY DATE_FORMAT(date, "%M %Y"), DATE_FORMAT(date, "%m"), DATE_FORMAT(date, "%Y") ORDER BY year, month ASC', $data);
+        $rows = Query::select('articles')
+                ->fields('COUNT(*) AS total, DATE_FORMAT(date, "%M %Y") AS date, DATE_FORMAT(date, "%m") as month, DATE_FORMAT(date, "%Y") as year')
+                ->groupBy('DATE_FORMAT(date, "%M %Y"), DATE_FORMAT(date, "%m"), DATE_FORMAT(date, "%Y")')
+                ->orderBy('year, month ASC')
+                ->done()
+                ->all();
+
         $archives = array();
         array_key_exists('Total', $rows) ? $archives[0] = $rows : $archives = $rows;
         return $archives;
@@ -73,8 +75,7 @@ class Home extends Model
 
     public function getSocial()
     {
-        $data = array(1);
-        $rows = $this->db->select('social', '*', 'visible = ?', $data);
+        $rows = Query::select('social')->where(['visible' => 1])->done()->all();
         $social = array();
         array_key_exists('name', $rows) ? $social[0] = $rows : $social = $rows;
         return $social;
@@ -82,15 +83,21 @@ class Home extends Model
 
     public function getArticlesBySearch(array $searchItems)
     {
-        $sql = '';
+        $where = array();
         $data = array(1);
         foreach ($searchItems as $item) {
             if ($item !== "") {
-                $sql .= " AND title LIKE CONCAT('%',?,'%') ";
-                array_push($data, $item);
+                $where[] = "['title' => '".$item."']".", ".LIKE_SOMEWHERE; 
             }
         }
-        $articles = $this->db->select('articles', '*', '1= ?'.$sql, $data);
+        if (empty($where)) {
+            $where[] = ['1' => 1];
+        }
+        $articles = Query::select('articles')
+                    ->where([implode(', ', $where)])
+                    ->done()
+                    ->all();
+                    
         return $articles;
     }
 }

@@ -7,15 +7,13 @@
     
 class CPanel extends Model
 {
-    protected $db;
     public function __construct()
     {
-        $this->db = new Query;
     }
 
     public function getArticles()
     {
-        $articles = $this->db::select('articles')->done()->all();
+        $articles = Query::select('articles')->done()->all();
 
         return $articles;    
     }
@@ -30,7 +28,7 @@ class CPanel extends Model
         $article['likes'] = 0;
         $article['status'] = 1;
 
-        $insert_id = $this->db::insert('articles')
+        $insert_id = Query::insert('articles')
         ->set([
             'title' => $article['title'],
             'category' => $article['category'],
@@ -52,7 +50,7 @@ class CPanel extends Model
             $tmp_name = $files['avatar']['tmp_name'];
             move_uploaded_file($tmp_name, "$directory/$name");
             $data['banner'] = "$directory/$name";
-            $this->db->update('articles', 'banner = ?', $data, 'id = ?', array($insert_id));
+            Query::update('articles')->set(['banner' => $data['banner']])->where(['id' => $insert_id])->done();
         }
 
     }
@@ -71,7 +69,7 @@ class CPanel extends Model
             $article['banner'] = "$directory/$name";    
         }
 
-        $this->db::update('articles')
+        Query::update('articles')
         ->set([
             'title' => $article['title'],
             'category' => $article['category'],
@@ -88,14 +86,14 @@ class CPanel extends Model
 
     public function createCategory(array $article)
     {
-        $this->db::insert('categories')
+        Query::insert('categories')
         ->set(['name' => $article['name']])
         ->done();
     }
     
     public function editCategory(int $id, array $article)
     {
-        $this->db::update('categories')
+        Query::update('categories')
         ->set(['name' => $article['name']])
         ->where(['id' => $id])
         ->done();
@@ -103,21 +101,21 @@ class CPanel extends Model
 
     public function deleteArticle(int $id)
     {
-        $this->db::delete('articles')
+        Query::delete('articles')
         ->where(['id' => $id])
         ->done();
     }
 
     public function deleteCategory(int $id)
     {
-        $this->db::delete('articles')
+        Query::delete('articles')
         ->where(['id' => $id])
         ->done();
     }
 
     public function getVisits()
     {
-        $dates_query = $this->db::select('sessions')
+        $dates_query = Query::select('sessions')
         ->fields('COUNT(session) AS session', 'firstvisit AS date')
         ->where(['1' => 1])
         ->groupBy('firstvisit')

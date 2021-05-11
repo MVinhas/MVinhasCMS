@@ -1,48 +1,45 @@
 <?php
     namespace models;
 
-    use \engine\DbOperations as DbOperations;
+    use \database\Query as Query;
     use \controllers\SiteController as SiteController;
 
 class Site extends Model
 {
-    protected $db;
+
     public function __construct()
     {
-        $this->db = new DbOperations;
     }
 
     public function visitCounter()
     {
-        $data = array(session_id());
-
-        $visit = $this->db->select('sessions', 'id', 'session = ?', $data);
+        $visit = Query::select('sessions')->fields('id')->where(['session' => session_id()])->done()->one();
 
         if (empty($visit)) {
-            $data = array(session_id(), date('Y-m-d'));
-            $this->db->create('sessions', 'session, firstvisit', $data);
+            Query::create('sessions')->set([
+                'session' => session_id(),
+                'firstvisit' => date('Y-m-d')
+            ])->done();
         }
     }
 
     public function getCategories()
     {
-        $categories = $this->db->select('categories', '*');
+        $categories = Query::select('categories')->done()->all();
 
         return $categories;
     }
     
     public function getCategory(int $id)
     {
-        $data = array($id);
-        $category = $this->db->select('categories', '*', 'id = ?', $data);
+        $category = Query::select('categories')->where(['id' => $id])->done()->one();
 
         return $category;
     }
 
     public function getArticle(int $id)
     {
-        $data = array($id);
-        $category = $this->db->select('articles', '*', 'id = ?', $data);
+        $category = Query::select('articles')->where(['id' => $id])->done()->one();
 
         return $category;
     }

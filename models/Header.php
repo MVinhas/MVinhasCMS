@@ -1,27 +1,22 @@
 <?php
     namespace models;
 
-    use \engine\DbOperations as DbOperations;
+    use \database\Query as Query;
     use \controllers\HeaderController as HeaderController;
     
 class Header extends Model
 {
-    protected $db;
     public function __construct()
     {
-        $this->db = new DbOperations;
     }
 
     public function getMenu()
     {
-        $data = array(1);
-        $menu = $this->db->select('pages', '*', 'header = ?', $data);
+        $menu = Query::select('pages')->where(['header' => 1])->done()->one();
 
         foreach ($menu as $k => $v) {
-            $data = array($v['method']);
-            $method = $this->db->select('methods', 'name, controller', 'id = ?', $data);
-            $data = array($method['controller']);
-            $controller = $this->db->select('controllers', 'name', 'id = ?', $data);
+            $method = Query::select('methods')->fields('name, controller')->where(['id' => $v['method']])->done()->one();
+            $controller = Query::select('controllers')->fields('name')->where(['id' => 1])->done()->one();
             $menu[$k]['class'] = $controller['name'].'/'.$method['name'];
         }
         if (!empty($menu)) {
