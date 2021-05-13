@@ -66,7 +66,7 @@ class Select extends Query implements QueryInterface
         if ($this->offset !== '')
             $query[] = $this->offset;
 
-        return implode(' ', $query);
+        return trim(implode(' ', $query));
     }
 
     public function where(array $condition, string $flag = '', string $delimiter = '')
@@ -146,47 +146,34 @@ class Select extends Query implements QueryInterface
         $i = 0;
         $values = array();
         if (isset($this->where)) {
+            
             foreach ($this->where as &$v) {
                 $condition = preg_split('/ !{0,}={0,}<{0,}>{0,}(LIKE|NOT LIKE){0,}/', $v, -1, PREG_SPLIT_NO_EMPTY);
+                
                 if (in_array($condition[0], ['AND', 'OR'])) {
                     $condition[0] .= " $condition[1]";
                     unset($condition[1]);
+                    
                 }
-                
                 preg_match('/(=|!=|like|not like|<|>)/i', $v, $matches);
+                
+                
                 $lastvalue = array_key_last($condition);
                 $values[] = trim($condition[$lastvalue]);
-                $condition[$lastvalue] = '?';
-                $v = implode(" $matches[0] ", [$condition[0], $condition[$lastvalue]]);
+                $condition[$lastvalue] = "?";
+                $v = implode($matches[0], [$condition[0], $condition[$lastvalue]]);
                 $i++;
             }
         }
         $this->entityEncode($values);
 
         $sql = $this->queryBuilder();
-
+        
         $statement = $this->preparedStatement($sql, $i, $values);
         
         $statement->execute();
-        
-        $this->result = $statement;
-        return $this;
-    }
 
-    public function one()
-    {     
-        $result = $this->result->get_result();
-        return $result->fetch_assoc();  
-    }
-
-    public function all()
-    {
-        $result = $this->result->get_result();
-        $sql_fetch = array();
-        while ($sql_retrieve = $result->fetch_assoc()) 
-            $sql_fetch[] = $sql_retrieve;
-
-        return $sql_fetch;
+        return $statement->get_result()->fetch_all(MYSQLI_ASSOC);
     }
     
 

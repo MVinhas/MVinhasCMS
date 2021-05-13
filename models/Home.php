@@ -15,7 +15,7 @@ class Home extends Model
         
     public function checkUsers()
     {
-        $getUsers = Query::select('users')->done()->all();
+        $getUsers = Query::select('users')->done();
   
         if (is_array($getUsers)) {
             return true;
@@ -36,7 +36,7 @@ class Home extends Model
     {
         
         //I need to send the data to this function in another way
-        //$createUser = Query::insert('users')->set([])->done();
+        $createUser = Query::insert('users')->set([])->done();
 
         if ($createUser === true) {
             return 1;
@@ -47,9 +47,10 @@ class Home extends Model
 
     public function getArticles(int $offset = 0)
     {
-        $articles = Query::select('articles')->where(['status' => 1])->orderBy('id DESC')->limit(5)->offset($offset)->done()->one();
+        $articles = Query::select('articles')->where(['status' => '1'])->orderBy('id DESC')->limit(5)->offset($offset)->done();
+
         foreach ($articles as $k => $v) {
-            $category = Query::select('categories')->where(['id' => $v['category']])->orderBy('id ASC')->done()->one();
+            $category = Query::select('categories')->where(['id' => $v['category']])->orderBy('id ASC')->done();
             !empty($category) ?? $articles[$k]['category_name'] = $category['name'] :: $articles[$k]['category_name'] = 'No Category';
         }
         return $articles;
@@ -57,7 +58,7 @@ class Home extends Model
 
     public function getAbout()
     { 
-        $about = Query::select('about')->where(['id' => 1])->done()->one();
+        $about = Query::select('about')->where(['id' => 1])->done();
         return $about;
     }
 
@@ -67,8 +68,7 @@ class Home extends Model
                 ->fields('COUNT(*) AS total, DATE_FORMAT(date, "%M %Y") AS date, DATE_FORMAT(date, "%m") as month, DATE_FORMAT(date, "%Y") as year')
                 ->groupBy('DATE_FORMAT(date, "%M %Y"), DATE_FORMAT(date, "%m"), DATE_FORMAT(date, "%Y")')
                 ->orderBy('year, month ASC')
-                ->done()
-                ->all();
+                ->done();
 
         $archives = array();
         array_key_exists('Total', $rows) ? $archives[0] = $rows : $archives = $rows;
@@ -77,7 +77,7 @@ class Home extends Model
 
     public function getSocial()
     {
-        $rows = Query::select('social')->where(['visible' => 1])->done()->all();
+        $rows = Query::select('social')->where(['visible' => 1])->done();
         $social = array();
         array_key_exists('name', $rows) ? $social[0] = $rows : $social = $rows;
         return $social;
@@ -97,8 +97,7 @@ class Home extends Model
         }
         $articles = Query::select('articles')
                     ->where([implode(', ', $where)])
-                    ->done()
-                    ->all();
+                    ->done();
                     
         return $articles;
     }

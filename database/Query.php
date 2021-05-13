@@ -18,8 +18,7 @@ class Query
     }
 
     public static function create($table)
-    {
-        
+    { 
         return new Create($table);
     }
 

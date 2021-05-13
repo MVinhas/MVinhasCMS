@@ -6,14 +6,15 @@
 
 class Site extends Model
 {
-
+    protected $db;
     public function __construct()
     {
+        $this->db = new Query;
     }
 
     public function visitCounter()
     {
-        $visit = Query::select('sessions')->fields('id')->where(['session' => session_id()])->done()->one();
+        $visit = $this->db::select('sessions')->fields('id')->where(['session' => session_id()])->done();
 
         if (empty($visit)) {
             Query::insert('sessions')->set([
@@ -25,22 +26,16 @@ class Site extends Model
 
     public function getCategories()
     {
-        $categories = Query::select('categories')->done()->all();
-
-        return $categories;
+        return Query::select('categories')->done();
     }
     
     public function getCategory(int $id)
     {
-        $category = Query::select('categories')->where(['id' => $id])->done()->one();
-
-        return $category;
+        return Query::select('categories')->where(['id' => $id])->done();
     }
 
     public function getArticle(int $id)
     {
-        $category = Query::select('articles')->where(['id' => $id])->done()->one();
-
-        return $category;
+        return Query::select('articles')->where(['id' => $id])->done();
     }
 }

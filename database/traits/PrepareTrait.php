@@ -8,10 +8,10 @@ trait PrepareTrait
     {
         $query = new Query();
         $fields = $this->getValueTypes($field_count, $data);
-        
         $sql_prepare = $query->db->prepare($sql);
         if (!empty($data))
             $sql_prepare->bind_param($fields, ...$data);
+
         return $sql_prepare;
     }
 
@@ -22,8 +22,6 @@ trait PrepareTrait
             $value_types[$i] = strtolower(substr(gettype($data[$i]), 0, 1));
         }
         
-        $value_types = implode('', $value_types);
-        
-        return $value_types;
+        return implode('', $value_types);
     }
 }

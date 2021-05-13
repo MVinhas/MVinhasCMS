@@ -15,8 +15,7 @@ class Admin extends Model
         $user = Query::select('users')
         ->fields('username', 'email', 'password', 'role')
         ->where(['username' => $username])
-        ->done()
-        ->one();
+        ->done();
 
         $password_verify = password_verify($password, $user['password']);
         

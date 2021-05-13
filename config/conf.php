@@ -7,6 +7,8 @@ require_once 'autoloader.php';
 
 require_once 'vendor/autoload.php';
 
+include 'utilities.php';
+
 define('LIKE', "LIKE $1");
 define('LIKE_START', "LIKE $1%");
 define('LIKE_END', "LIKE %1$");

@@ -13,7 +13,7 @@ class CPanel extends Model
 
     public function getArticles()
     {
-        $articles = Query::select('articles')->done()->all();
+        $articles = Query::select('articles')->done();
 
         return $articles;    
     }
@@ -119,8 +119,7 @@ class CPanel extends Model
         ->fields('COUNT(session) AS session', 'firstvisit AS date')
         ->where(['1' => 1])
         ->groupBy('firstvisit')
-        ->done()
-        ->one();
+        ->done();
                        
         return $dates_query; 
     }

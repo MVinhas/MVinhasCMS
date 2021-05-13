@@ -17,8 +17,7 @@ class Article extends Model
         $articles = Query::select('articles')
         ->where(['DATE_FORMAT(date, "%m")' => $month], LIKE)
         ->andWhere(['DATE_FORMAT(date, "%Y")' => $year], LIKE)
-        ->done()
-        ->all();
+        ->done();
 
         return $articles;   
     }
@@ -28,8 +27,7 @@ class Article extends Model
         $articles = Query::select('articles')
         ->where(['category' => $category])
         ->andWhere(['status' => 1])
-        ->done()
-        ->all();
+        ->done();
 
         return $articles;
     }
