@@ -48,7 +48,6 @@ class Home extends Model
     public function getArticles(int $offset = 0)
     {
         $articles = Query::select('articles')->where(['status' => 1])->orderBy('id DESC')->limit(5)->offset($offset)->done()->one();
-        echo "No Home";exit;
         foreach ($articles as $k => $v) {
             $category = Query::select('categories')->where(['id' => $v['category']])->orderBy('id ASC')->done()->one();
             !empty($category) ?? $articles[$k]['category_name'] = $category['name'] :: $articles[$k]['category_name'] = 'No Category';

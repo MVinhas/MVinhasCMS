@@ -37,12 +37,8 @@ class Select extends Query implements QueryInterface
             $this->fields = '*';
             return $this;
         }
-        
-        foreach ($fields as &$field) {
-            $field = "`".$field."`";
-        }
 
-        $this->fields = implode(', ', $fields);
+        $this->fields = implode(',', $fields);
 
         return $this;
     }
@@ -58,11 +54,11 @@ class Select extends Query implements QueryInterface
         if (!empty($this->where))
             $query[] = "WHERE ".implode(" ", $this->where);
 
-        if ($this->orderBy !== '')
-            $query[] = $this->orderBy;
-
         if ($this->groupBy !== '')
             $query[] = $this->groupBy;
+        
+        if ($this->orderBy !== '')
+            $query[] = $this->orderBy;
         
         if ($this->limit !== '')
             $query[] = $this->limit;
@@ -149,21 +145,22 @@ class Select extends Query implements QueryInterface
     {
         $i = 0;
         $values = array();
-        foreach ($this->where as &$v) {
-            $condition = preg_split('/ !{0,}={0,}<{0,}>{0,}(LIKE|NOT LIKE){0,}/', $v, -1, PREG_SPLIT_NO_EMPTY);
-            if (in_array($condition[0], ['AND', 'OR'])) {
-                $condition[0] .= " $condition[1]";
-                unset($condition[1]);
+        if (isset($this->where)) {
+            foreach ($this->where as &$v) {
+                $condition = preg_split('/ !{0,}={0,}<{0,}>{0,}(LIKE|NOT LIKE){0,}/', $v, -1, PREG_SPLIT_NO_EMPTY);
+                if (in_array($condition[0], ['AND', 'OR'])) {
+                    $condition[0] .= " $condition[1]";
+                    unset($condition[1]);
+                }
+                
+                preg_match('/(=|!=|like|not like|<|>)/i', $v, $matches);
+                $lastvalue = array_key_last($condition);
+                $values[] = trim($condition[$lastvalue]);
+                $condition[$lastvalue] = '?';
+                $v = implode(" $matches[0] ", [$condition[0], $condition[$lastvalue]]);
+                $i++;
             }
-            
-            preg_match('/(=|!=|like|not like|<|>)/i', $v, $matches);
-            $lastvalue = array_key_last($condition);
-            $values[] = trim($condition[$lastvalue]);
-            $condition[$lastvalue] = '?';
-            $v = implode(" $matches[0] ", [$condition[0], $condition[$lastvalue]]);
-            $i++;
         }
-        
         $this->entityEncode($values);
 
         $sql = $this->queryBuilder();

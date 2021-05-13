@@ -41,8 +41,8 @@ class Insert extends Query implements QueryInterface
             }
         }
 
-        $this->fields = implode(', ', $fields);
-        $this->values = implode(', ', $values);
+        $this->fields = implode(',', $fields);
+        $this->values = implode(',', $values);
         $this->valuesPacked = $values;
 
         return $this;
@@ -71,10 +71,10 @@ class Insert extends Query implements QueryInterface
             $prepared[] = str_replace($v, '?', $v);
         }
         
-        $preparedQuery = str_replace($this->values, implode(', ', $prepared), $this->queryBuilder());
+        $preparedQuery = str_replace($this->values, implode(',', $prepared), $this->queryBuilder());
         $this->entityEncode($values);
+        
         $statement = $this->preparedStatement($preparedQuery, count($prepared), $values);
-
         return $statement->execute();
 
     }

@@ -6,8 +6,10 @@
     
 class Article extends Model
 {
+    protected $db;
     public function __construct()
     {
+        $this->db = new Query;
     }
 
     public function getCurrentArticles(string $month = '01', int $year = 1970)
