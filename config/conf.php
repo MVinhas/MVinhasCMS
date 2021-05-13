@@ -7,19 +7,10 @@ require_once 'autoloader.php';
 
 require_once 'vendor/autoload.php';
 
-require_once 'engine/DbOperations.php';
-
 define('LIKE', "LIKE $1");
 define('LIKE_START', "LIKE $1%");
 define('LIKE_END', "LIKE %1$");
 define('LIKE_SOMEWHERE', "LIKE %$1%");
-
-try {
-    $config_flags = new \engine\DbOperations();
-    $__CONFIG = $config_flags->select('config', '*');
-} catch (\Error $e) {
-    $db_error = "No Config found. Please check your DB Connection";
-}
 
 $config_flags->debugmode = $__CONFIG['debugmode'] ? $__CONFIG['debugmode'] : 1;
 $config_flags->sitename = $__CONFIG['sitename'] ? $__CONFIG['sitename'] : '(no name found)';
