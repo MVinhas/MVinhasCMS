@@ -86,7 +86,7 @@ class Select extends Query implements QueryInterface
                 if ($flag === '') {
                     //PHP8 str_starts_with ( string $haystack , string $needle ) : bool
                     $k = str_replace(' ','', $k);    
-                    $this->where[] = strpos('!', (string)$v) === false ?  trim("$delimiter $k = '{$v}'") : trim("$delimiter $k != '{$v}'");
+                    $this->where[] = strpos('!', (string)$v) === false ?  trim("$delimiter $k = $v") : trim("$delimiter $k != $v");
                 }
             }
             
@@ -170,7 +170,6 @@ class Select extends Query implements QueryInterface
         $sql = $this->queryBuilder();
         
         $statement = $this->preparedStatement($sql, $i, $values);
-        
         $statement->execute();
 
         return $statement->get_result()->fetch_all(MYSQLI_ASSOC);
