@@ -1,10 +1,10 @@
 {
-    "name": "mvinhas/mvinhas-blog",
-    "description": "mvinhas-blog",
+    "name": "mvinhas/liquet",
+    "description": "liquet",
     "type": "project",
     "require": {
         "twig/twig": "^3.0",
-        "phpunit/phpunit": "^8"
+        "phpunit/phpunit": "^9"
     },
     "autoload": {
         "psr-4": {
@@ -19,7 +19,7 @@
         {
             "name": "Micael Vinhas",
             "email": "dev.mvinhas@gmail.com",
-            "homepage": "http://mvinhas-blog.com",
+            "homepage": "http://micaelvinhas.com",
             "role": "Developer"
         }
     ]

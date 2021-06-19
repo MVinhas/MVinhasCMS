@@ -4,7 +4,7 @@ namespace config;
 define('DB_SERVER', '127.0.0.1');
 define('DB_USERNAME', 'mvinhas');
 define('DB_PASSWORD', 'mvinhas');
-define('DB_DATABASE', 'mvinhasblog');
+define('DB_DATABASE', 'liquet');
 
 #Connection creation
 class Connector
