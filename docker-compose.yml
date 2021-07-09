@@ -1,0 +1,9 @@
+#docker-compose.yml
+version: "3.8"
+services:
+  webapp:
+    image: mvinhas/liquet
+    ports:
+      - "8001:80"
+    volumes:
+      - ./src:/var/www/html
